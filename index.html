@@ -196,7 +196,7 @@ td.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabula
 .abas button[aria-selected="true"] { background: var(--superficie); color: var(--tinta); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 .palco { height: 250px; display: grid; place-items: center; perspective: 900px; overflow: hidden;
   background: radial-gradient(ellipse at 50% 85%, color-mix(in srgb, var(--kraft) 16%, transparent), transparent 60%); border-radius: 8px; }
-.caixa { position: relative; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-36deg); transition: transform .5s ease; }
+.caixa { position: relative; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-36deg); transition: transform .35s ease-out; }
 
 .face { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; border: 1px solid rgb(0 0 0 / .12); overflow: hidden; }
 .face img { max-width: 62%; max-height: 62%; mix-blend-mode: multiply; opacity: .92; }
@@ -921,12 +921,20 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
     let ini = null;
     p.addEventListener("pointerdown", (e) => { ini = { x: e.clientX, y: e.clientY }; p.classList.add("arrastando"); p.setPointerCapture(e.pointerId); });
     p.addEventListener("pointermove", (e) => {
-      if (!ini) return;
+      if (!ini) {
+        // Passando o mouse: a caixa vira para o lado do cursor
+        if (e.pointerType !== "mouse") return;
+        const id = p.querySelector(".caixa").id, g = giro[id] || (giro[id] = { x: -24, y: -36 });
+        const r = p.getBoundingClientRect(), rx = (e.clientX - r.left) / r.width - 0.5, ry = (e.clientY - r.top) / r.height - 0.5;
+        $(id).style.transform = `rotateX(${g.x - ry * 24}deg) rotateY(${g.y - rx * 90}deg)`;
+        return;
+      }
       const id = p.querySelector(".caixa").id, g = giro[id] || (giro[id] = { x: -24, y: -36 });
       g.y += (e.clientX - ini.x) * 0.6; g.x = Math.max(-75, Math.min(15, g.x - (e.clientY - ini.y) * 0.4));
       ini = { x: e.clientX, y: e.clientY }; aplicarGiro(id);
     });
     const fim = () => { ini = null; p.classList.remove("arrastando"); };
+    p.addEventListener("pointerleave", () => { if (!ini) aplicarGiro(p.querySelector(".caixa").id); });
     p.addEventListener("pointerup", fim); p.addEventListener("pointercancel", fim);
   });
   $("sugerir").addEventListener("click", () => {
