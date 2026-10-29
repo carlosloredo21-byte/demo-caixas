@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Caixa Sob Medida</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: loja de fábrica de caixas (verde na interface, papelão kraft nas caixas) — topo fixo com navegação; cada visão (vitrine, catálogo, configurador, carrinho, pedidos, painel da fábrica) é uma página da mesma loja */
+:root {
+  --papel: #F4F5F2;      /* fundo: papel offset frio */
+  --superficie: #FFFFFF;
+  --tinta: #1D2320;
+  --tinta-2: #59615C;
+  --linha: #D9DDD7;
+  --kraft: #2F8A3A;      /* destaque: verde da loja */
+  --kraft-claro: #E2F1E3;
+  --kraft-escuro: #073121;
+  --rodape: #0A302A;
+  --corte: #C8412A;      /* linha de corte da faca */
+  --vinco: #2E6AA8;      /* linha de vinco/dobra */
+  --ok: #1F7A6E;
+  --atencao: #B7791F;
+  --zap: #DCF5E3;
+  --face-1: #C99A62; --face-2: #B4844E; --face-3: #D9B080;
+  --display: "BIZ UDPMincho", "Georgia", serif;
+  --corpo: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --papel: #141714; --superficie: #1C201D; --tinta: #E9ECE7; --tinta-2: #A3ABA5; --linha: #313732;
+  --kraft: #5DBB66; --kraft-claro: #17301B; --kraft-escuro: #A6DDAB; --rodape: #0A1F1B; --corte: #F07257; --vinco: #6EA6E3; --ok: #6CC0B4; --atencao: #E2B254; --zap: #1F3A28;
+  --face-1: #A87845; --face-2: #8E6236; --face-3: #BF8F5A; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --papel: #141714; --superficie: #1C201D; --tinta: #E9ECE7; --tinta-2: #A3ABA5; --linha: #313732;
+  --kraft: #5DBB66; --kraft-claro: #17301B; --kraft-escuro: #A6DDAB; --rodape: #0A1F1B; --corte: #F07257; --vinco: #6EA6E3; --ok: #6CC0B4; --atencao: #E2B254; --zap: #1F3A28;
+  --face-1: #A87845; --face-2: #8E6236; --face-3: #BF8F5A; color-scheme: dark }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body { background: var(--papel); color: var(--tinta); font-family: var(--corpo); font-size: 15px; line-height: 1.5; margin: 0; padding-block: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--superficie); }
+.gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.larg { max-width: 1180px; margin: 0 auto; }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; color: var(--kraft-escuro); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(30px, 4.6vw, 48px); line-height: 1.12; letter-spacing: -.01em; }
+h2 { font-size: clamp(24px, 3vw, 30px); line-height: 1.1; }
+h3 { font-size: 20px; }
+.dica { font-size: 13px; color: var(--tinta-2); margin: 0; }
+.rotulo { font: 500 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--kraft-escuro); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Topo */
+.aviso { background: var(--kraft-claro); color: var(--kraft-escuro); font-size: 12.5px; text-align: center; padding-block: 5px; }
+.topo { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--superficie); border-bottom: 1px solid var(--linha); }
+.topo .larg { display: flex; align-items: center; gap: 12px 24px; padding-block: 10px; flex-wrap: wrap; }
+.marca { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+.marca span { color: var(--kraft); }
+.marca img { height: 52px; width: auto; display: block; background: #fff; border-radius: 6px; padding: 2px 6px; }
+.marca small { font: 500 11px var(--mono); letter-spacing: .06em; color: var(--tinta-2); margin-left: 8px; vertical-align: 4px; text-transform: none; }
+.numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.numeros div { border-top: 2px solid var(--kraft); padding-top: 8px; display: grid; }
+.numeros strong { font: 700 30px var(--display); color: var(--kraft-escuro); font-variant-numeric: tabular-nums; }
+.numeros span { font-size: 13.5px; color: var(--tinta-2); }
+.segmentos { display: flex; flex-wrap: wrap; gap: 8px; }
+.segmentos a { text-decoration: none; }
+.segmentos a:hover { border-color: var(--kraft); }
+.selo { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px var(--mono); color: var(--kraft-escuro); border: 1.5px solid var(--kraft); border-radius: 999px; padding: 4px 12px; justify-self: start; }
+.rodape { background: var(--rodape); color: #E6EFE8; margin-top: 48px; padding-block: 28px; }
+.rodape .larg { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; font-size: 14px; }
+.rodape b { font: 600 18px var(--display); letter-spacing: .03em; display: block; margin-bottom: 4px; color: #fff; }
+.rodape .num { user-select: all; }
+.hero-foto { border-radius: 12px; overflow: hidden; aspect-ratio: 2 / 1; max-width: 100%; background: var(--kraft-claro); }
+.hero-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.palco-mini { height: 190px; }
+.modelo .foto { border-radius: 6px; aspect-ratio: 3 / 2; object-fit: cover; width: 100%; background: var(--papel); margin-bottom: 4px; }
+.selos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+.selos img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 10px; border: 1px solid var(--linha); padding: 6px; }
+.equipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.pessoa { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 12px; }
+.pessoa img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: var(--kraft-claro); }
+.pessoa b { display: block; } .pessoa span { font-size: 13px; color: var(--tinta-2); }
+.sobre { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+@media (max-width: 860px) { .sobre { grid-template-columns: minmax(0, 1fr); } }
+.sobre img { border-radius: 12px; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+.sobre p { margin: 0; color: var(--tinta-2); max-width: 60ch; }
+.menu { display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; }
+.menu a { text-decoration: none; font-size: 14px; color: var(--tinta-2); padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+.menu a:hover { color: var(--tinta); background: var(--papel); }
+.menu a[aria-current="page"] { color: var(--tinta); background: var(--papel); font-weight: 600; }
+.menu .sep { width: 1px; background: var(--linha); margin: 4px 6px; flex: none; }
+.menu a.fab { color: var(--vinco); }
+.carrinho-btn { text-decoration: none; font: 600 14px var(--corpo); display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--linha); border-radius: 8px; padding: 6px 12px; white-space: nowrap; }
+.carrinho-btn b { background: var(--kraft); color: #fff; border-radius: 999px; min-width: 22px; text-align: center; font: 600 12px var(--mono); padding: 2px 6px; }
+
+.visao { padding-block: 28px 0; }
+.visao > .larg { display: grid; gap: 22px; }
+.cab { display: grid; gap: 6px; }
+.cab p { margin: 0; color: var(--tinta-2); max-width: 62ch; }
+
+/* Botões e campos */
+.btn { font: 600 15px var(--corpo); border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1.5px solid transparent; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-kraft { background: var(--kraft); color: #fff; }
+.btn-kraft:hover { background: var(--kraft-escuro); }
+.btn-linha { background: var(--superficie); border-color: var(--linha); color: var(--tinta); }
+.btn-linha:hover { border-color: var(--kraft); }
+.btn-peq { padding: 6px 10px; font-size: 13px; }
+.btn:focus-visible, .chip:focus-visible, .menu a:focus-visible, .carrinho-btn:focus-visible { outline: 2px solid var(--vinco); outline-offset: 2px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+label.campo { display: grid; gap: 4px; font-size: 12px; color: var(--tinta-2); text-transform: uppercase; letter-spacing: .06em; min-width: 0; }
+.campo input, .campo select, .campo textarea { font: 500 16px var(--mono); color: var(--tinta); background: var(--papel); border: 1px solid var(--linha); border-radius: 6px; padding: 8px 10px; width: 100%; min-width: 0; }
+.campo textarea { font: 400 14px var(--corpo); resize: vertical; }
+.campo input:focus, .campo select:focus, .campo textarea:focus { outline: 2px solid var(--vinco); outline-offset: 1px; }
+.unid { position: relative; }
+.unid::after { content: "cm"; position: absolute; right: 10px; bottom: 10px; font: 12px var(--mono); color: var(--tinta-2); pointer-events: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1.5px solid var(--linha); background: var(--superficie); color: var(--tinta); border-radius: 999px; padding: 6px 14px; font: 500 14px var(--mono); cursor: pointer; }
+.chip[aria-pressed="true"] { border-color: var(--kraft); background: var(--kraft); color: #fff; }
+.chip .desc { font-size: 11px; opacity: .8; margin-left: 4px; }
+.caixa-bloco { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+
+/* Vitrine */
+.hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.hero-txt { display: grid; gap: 14px; }
+.hero-txt p { margin: 0; color: var(--tinta-2); font-size: 17px; max-width: 52ch; }
+.hero-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-palco { background: var(--superficie); border: 1px solid var(--linha); border-radius: 12px; padding: 18px; display: grid; gap: 10px; }
+.cotacao-rapida { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cotacao-res { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; border-top: 1px dashed var(--linha); padding-top: 10px; }
+.cotacao-res strong { font: 700 30px var(--display); font-variant-numeric: tabular-nums; }
+.passos-lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; counter-reset: p; }
+.passos-lista li { counter-increment: p; display: grid; gap: 4px; border-top: 2px solid var(--kraft); padding-top: 10px; }
+.passos-lista li::before { content: counter(p, decimal-leading-zero); font: 500 12px var(--mono); color: var(--kraft); }
+.passos-lista b { font: 700 18px/1.25 var(--display); color: var(--kraft-escuro); }
+.passos-lista span { font-size: 14px; color: var(--tinta-2); }
+.dois { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 760px) { .dois { grid-template-columns: minmax(0, 1fr); } }
+.tabela-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--linha); }
+th { font: 500 11.5px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-2); }
+td.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.lista-check { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px; }
+.lista-check li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+.lista-check li::before { content: ""; width: 10px; height: 10px; margin-top: 6px; border: 2px solid var(--kraft); transform: rotate(45deg); }
+
+/* Catálogo */
+.produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.prod { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 14px; display: grid; gap: 8px; grid-template-rows: auto auto 1fr auto; }
+.prod .ilus { background: var(--papel); border-radius: 8px; display: grid; place-items: center; height: 130px; }
+.prod .ilus svg { width: 160px; height: 120px; }
+.prod h3 { font-size: 19px; }
+.prod .med { font: 500 13px var(--mono); color: var(--kraft-escuro); }
+.prod .preco-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.prod .preco-linha strong { font: 700 22px var(--display); font-variant-numeric: tabular-nums; }
+.prod .comprar { display: flex; gap: 8px; align-items: center; }
+.stepper { display: inline-flex; border: 1px solid var(--linha); border-radius: 8px; overflow: hidden; }
+.stepper button { border: 0; background: var(--papel); color: var(--tinta); width: 32px; font: 600 16px var(--mono); cursor: pointer; }
+.stepper input { width: 46px; border: 0; text-align: center; font: 500 15px var(--mono); background: var(--superficie); color: var(--tinta); }
+.filtros { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Configurador */
+.grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 24px; align-items: start; }
+@media (max-width: 900px) { .grade { grid-template-columns: minmax(0, 1fr); } }
+.passos { display: grid; gap: 14px; min-width: 0; }
+.passo h2 { font-size: 21px; letter-spacing: .02em; display: flex; align-items: baseline; gap: 10px; }
+.passo h2 .n { font-family: var(--mono); font-size: 13px; color: var(--kraft); font-weight: 500; }
+.modelos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.modelo { position: relative; border: 1.5px solid var(--linha); border-radius: 8px; padding: 12px; cursor: pointer; display: grid; gap: 4px; background: var(--superficie); align-content: start; }
+.modelo input { position: absolute; opacity: 0; pointer-events: none; }
+.modelo b { font-size: 15px; }
+.modelo small { color: var(--tinta-2); font-size: 12.5px; }
+.modelo .cod { font-family: var(--mono); font-size: 11px; color: var(--kraft); letter-spacing: .05em; }
+.modelo:has(input:checked) { border-color: var(--kraft); box-shadow: inset 0 0 0 1px var(--kraft); background: color-mix(in srgb, var(--kraft) 7%, var(--superficie)); }
+.modelo:has(input:focus-visible) { outline: 2px solid var(--vinco); outline-offset: 2px; }
+.medidas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.produto-det { border-top: 1px dashed var(--linha); padding-top: 12px; display: grid; gap: 8px; }
+.produto-det summary { cursor: pointer; font-weight: 500; color: var(--kraft-escuro); }
+.linha-produto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 8px; align-items: end; }
+@media (max-width: 560px) { .linha-produto { grid-template-columns: repeat(2, minmax(0, 1fr)); } .linha-produto button { grid-column: 1 / -1; } }
+.qtd-livre { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+.qtd-livre .campo { width: 160px; }
+.upload { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.upload input[type=file] { font-size: 13px; max-width: 100%; }
+.logo-mini { width: 54px; height: 54px; border: 1px dashed var(--linha); border-radius: 6px; display: grid; place-items: center; overflow: hidden; background: #fff; }
+.logo-mini img { max-width: 90%; max-height: 90%; }
+.lateral { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 76px); display: grid; gap: 14px; min-width: 0; }
+@media (max-width: 900px) { .lateral { position: static; } }
+.abas { display: flex; gap: 4px; background: var(--papel); border-radius: 8px; padding: 3px; }
+.abas button { flex: 1; font: 500 13px var(--corpo); border: 0; background: transparent; color: var(--tinta-2); padding: 6px; border-radius: 6px; cursor: pointer; }
+.abas button[aria-selected="true"] { background: var(--superficie); color: var(--tinta); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+.palco { height: 250px; display: grid; place-items: center; perspective: 900px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 85%, color-mix(in srgb, var(--kraft) 16%, transparent), transparent 60%); border-radius: 8px; }
+.caixa { position: relative; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-36deg); transition: transform .5s ease; }
+
+.face { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; border: 1px solid rgb(0 0 0 / .12); overflow: hidden; }
+.face img { max-width: 62%; max-height: 62%; mix-blend-mode: multiply; opacity: .92; }
+.face .marca-face { font: 700 13px var(--display); letter-spacing: .08em; color: rgb(40 25 10 / .55); text-transform: uppercase; }
+.f-frente, .f-tras { background: var(--face-1); }
+.f-dir, .f-esq, .f-base { background: var(--face-2); }
+.f-topo { background: var(--face-3); }
+.f-topo::after { content: ""; position: absolute; inset: 50% 0 auto; border-top: 2px solid rgb(0 0 0 / .14); }
+.faca-wrap { overflow-x: auto; }
+.faca-wrap svg { display: block; width: 100%; height: auto; min-width: 300px; }
+.legenda { display: flex; gap: 14px; font-size: 12px; color: var(--tinta-2); flex-wrap: wrap; }
+.legenda i { display: inline-block; width: 18px; vertical-align: middle; margin-right: 5px; border-top: 2px solid var(--corte); }
+.legenda i.v { border-top: 2px dashed var(--vinco); }
+.total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.total strong { font: 700 36px var(--display); letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.unit { font: 500 14px var(--mono); color: var(--tinta-2); }
+.det { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13.5px; color: var(--tinta-2); margin: 0; }
+.det dd { margin: 0; text-align: right; font-family: var(--mono); color: var(--tinta); font-variant-numeric: tabular-nums; }
+.det .desconto { color: var(--ok); }
+.det .forte { color: var(--tinta); font-weight: 600; }
+.prazo { font-size: 13.5px; padding: 8px 10px; border-radius: 6px; background: var(--papel); }
+.duas-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vendedor { border: 1.5px dashed var(--kraft); }
+
+/* Carrinho e checkout */
+.carrinho-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 24px; align-items: start; }
+@media (max-width: 900px) { .carrinho-grade { grid-template-columns: minmax(0, 1fr); } }
+.item { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding-block: 12px; border-bottom: 1px solid var(--linha); }
+.item:last-child { border-bottom: 0; }
+.item .ilus { width: 72px; height: 60px; background: var(--papel); border-radius: 6px; display: grid; place-items: center; }
+.item .ilus svg { width: 64px; height: 52px; }
+.item .nome { font-weight: 600; }
+.item .sub { font-size: 13px; color: var(--tinta-2); }
+.item .val { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; display: grid; gap: 4px; justify-items: end; }
+.remover { border: 0; background: none; color: var(--corte); font-size: 12.5px; cursor: pointer; padding: 0; text-decoration: underline; }
+.vazio { text-align: center; padding: 30px 10px; display: grid; gap: 10px; justify-items: center; color: var(--tinta-2); }
+.etapas { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; font: 500 12px var(--mono); color: var(--tinta-2); flex-wrap: wrap; }
+.etapas li { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--linha); }
+.etapas li.atual { border-color: var(--kraft); color: var(--kraft-escuro); background: color-mix(in srgb, var(--kraft) 10%, var(--superficie)); }
+.etapas li.feita { color: var(--ok); border-color: var(--ok); }
+.form-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.form-grade .inteira { grid-column: 1 / -1; }
+@media (max-width: 520px) { .form-grade { grid-template-columns: minmax(0, 1fr); } }
+.opcoes { display: grid; gap: 8px; }
+.opcoes .modelo { grid-template-columns: 1fr auto; align-items: center; }
+.opcoes .modelo small { grid-column: 1; }
+.opcoes .modelo .v { grid-row: 1 / span 2; grid-column: 2; font-family: var(--mono); font-size: 14px; }
+.pix { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; }
+@media (max-width: 420px) { .pix { grid-template-columns: 1fr; justify-items: start; } }
+.qr { width: 120px; height: 120px; background: #fff; border-radius: 6px; padding: 8px; }
+.qr canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+.resumo-lado { display: grid; gap: 10px; }
+
+/* Pedidos */
+.pedido { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 16px; display: grid; gap: 12px; }
+.pedido-topo { display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; align-items: baseline; }
+.pedido-topo h3 { font-size: 22px; }
+.pill { font: 500 12px var(--mono); padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.ok { color: var(--ok); } .pill.at { color: var(--atencao); } .pill.kr { color: var(--kraft-escuro); } .pill.az { color: var(--vinco); }
+.trilha { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
+.trilha li { display: grid; gap: 6px; font-size: 12px; color: var(--tinta-2); }
+.trilha li::before { content: ""; height: 5px; border-radius: 3px; background: var(--linha); }
+.trilha li.feito { color: var(--tinta); } .trilha li.feito::before { background: var(--ok); }
+.trilha li.agora { color: var(--kraft-escuro); font-weight: 600; } .trilha li.agora::before { background: var(--kraft); }
+@media (max-width: 560px) { .trilha { grid-auto-flow: row; } .trilha li { grid-template-columns: 40px 1fr; align-items: center; } }
+.arte { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 260px); gap: 14px; background: var(--papel); border-radius: 8px; padding: 12px; }
+@media (max-width: 700px) { .arte { grid-template-columns: minmax(0, 1fr); } }
+.arte .acoes { display: flex; gap: 8px; flex-wrap: wrap; align-content: start; }
+.zap { background: var(--zap); border-radius: 10px 10px 10px 2px; padding: 10px 12px; font-size: 13.5px; max-width: 520px; }
+.zap small { display: block; color: var(--tinta-2); font-size: 11px; margin-top: 4px; }
+
+/* Painel da fábrica */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 820px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 14px; display: grid; gap: 2px; }
+.kpi strong { font: 700 30px var(--display); font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 13px; color: var(--tinta-2); }
+.kpi em { font-style: normal; font: 500 12px var(--mono); color: var(--ok); }
+.grafico svg { width: 100%; height: auto; display: block; }
+.leg { display: flex; gap: 16px; font-size: 12.5px; color: var(--tinta-2); flex-wrap: wrap; }
+.leg i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.kanban-wrap { overflow-x: auto; padding-bottom: 6px; }
+.kanban { display: grid; grid-template-columns: repeat(5, minmax(190px, 1fr)); gap: 10px; min-width: 980px; }
+.coluna { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 10px; display: grid; gap: 8px; align-content: start; }
+.coluna h3 { font-size: 17px; display: flex; justify-content: space-between; }
+.coluna h3 span { font: 500 13px var(--mono); color: var(--tinta-2); }
+.cartao { border: 1px solid var(--linha); border-left: 3px solid var(--kraft); border-radius: 6px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; background: var(--papel); }
+.cartao.novo { border-left-color: var(--ok); animation: chega .6s ease; }
+@keyframes chega { from { transform: translateY(-6px); } to { transform: none; } }
+.cartao b { font-size: 13.5px; }
+.cartao .meta { color: var(--tinta-2); display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+.recompra-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding-block: 10px; border-bottom: 1px solid var(--linha); }
+.recompra-linha:last-child { border-bottom: 0; }
+
+/* Aviso flutuante (simula a mensagem automática no WhatsApp) */
+.toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; z-index: 20; width: min(360px, calc(100vw - 32px)); }
+.toast { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 10px 12px; box-shadow: 0 6px 24px rgb(0 0 0 / .18); display: grid; gap: 6px; font-size: 13.5px; animation: chega .3s ease; }
+.toast .rotulo { color: var(--ok); }
+@media (prefers-reduced-motion: reduce) { .caixa, .cartao.novo, .toast { transition: none; animation: none; } }
+
+/* Camada moderna: mesma marca, cantos maiores, sombras suaves, tipografia sem serifa e forte */
+:root { --display: "DM Sans", "Segoe UI", system-ui, sans-serif; --raio: 18px; --sombra: 0 1px 2px rgb(7 49 33 / .05), 0 12px 32px rgb(7 49 33 / .07); }
+h1, h2, h3 { font-weight: 800; letter-spacing: -.025em; }
+h2 { font-size: clamp(26px, 3.2vw, 34px); }
+.rotulo { font: 700 12px var(--corpo); letter-spacing: .12em; color: var(--kraft); }
+.topo { background: color-mix(in srgb, var(--superficie) 84%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom-color: color-mix(in srgb, var(--linha) 60%, transparent); }
+.menu a { border-radius: 999px; padding: 8px 14px; font-weight: 500; }
+.menu a[aria-current="page"] { background: var(--kraft-claro); color: var(--kraft-escuro); font-weight: 700; }
+.carrinho-btn { border-radius: 999px; padding: 8px 14px; }
+.btn { border-radius: 999px; padding: 12px 22px; font-weight: 700; transition: transform .15s, box-shadow .15s, background .15s; }
+.btn-peq { padding: 8px 14px; }
+.btn-kraft { box-shadow: 0 8px 20px color-mix(in srgb, var(--kraft) 32%, transparent); }
+.btn-kraft:hover { transform: translateY(-1px); }
+.chip { font-family: var(--corpo); font-weight: 600; padding: 7px 16px; }
+.caixa-bloco, .prod, .pedido, .kpi, .coluna, .pessoa, .hero-palco { border-radius: var(--raio); border-color: color-mix(in srgb, var(--linha) 65%, transparent); box-shadow: var(--sombra); }
+.campo input, .campo select { font-family: var(--corpo); font-weight: 600; border-radius: 12px; font-variant-numeric: tabular-nums; }
+.modelo { border-radius: 14px; }
+.total strong, .kpi strong, .cotacao-res strong, .prod .preco-linha strong { font-weight: 800; letter-spacing: -.02em; }
+.passos-lista li { border-top: 0; background: var(--superficie); border-radius: var(--raio); padding: 18px; box-shadow: var(--sombra); }
+.passos-lista li::before { width: 36px; height: 36px; border-radius: 50%; background: var(--kraft-claro); color: var(--kraft-escuro); display: grid; place-items: center; font: 800 13px var(--corpo); margin-bottom: 6px; }
+.segmentos a.chip { padding: 10px 18px; background: var(--superficie); box-shadow: var(--sombra); border-color: transparent; }
+.segmentos a.chip:hover { border-color: var(--kraft); color: var(--kraft-escuro); }
+.selos img { border-radius: var(--raio); }
+.sobre img { border-radius: 22px; }
+.visao { padding-block: 36px 0; }
+.visao > .larg, .corpo-inicio { gap: 34px; }
+.corpo-inicio { display: grid; padding-top: 40px; }
+.rodape { border-radius: 28px 28px 0 0; }
+
+/* Abertura em faixa verde com a foto da fábrica */
+#v-inicio { padding-top: 0; }
+.banda { padding-block: 52px 60px; color: #EAF3EC; border-radius: 0 0 32px 32px;
+  background: linear-gradient(100deg, rgb(7 49 33 / .97) 0%, rgb(7 49 33 / .9) 48%, rgb(7 49 33 / .6) 100%), #073121; }
+.banda h1 { color: #fff; }
+.banda h1 em { font-style: normal; color: #86D98E; }
+.banda .hero-txt > p { color: rgb(234 243 236 / .82); }
+.banda .selo { color: #D6EEDA; border-color: rgb(255 255 255 / .3); background: rgb(255 255 255 / .06); }
+.banda .numeros div { border-top-color: rgb(255 255 255 / .22); }
+.banda .numeros strong { color: #fff; font-size: 28px; font-weight: 800; }
+.banda .numeros span { color: rgb(234 243 236 / .7); }
+.btn-vidro { background: rgb(255 255 255 / .1); border-color: rgb(255 255 255 / .3); color: #fff; }
+.btn-vidro:hover { background: rgb(255 255 255 / .18); }
+.hero-palco { gap: 12px; color: var(--tinta); }
+.banda .numeros { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 560px) { .banda .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.selo { font: 600 13px var(--corpo); }
+.modelo .cod { font-family: var(--corpo); font-weight: 700; }
+
+/* Logo no simulador */
+.sr { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none; }
+.logo-btn { display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px dashed var(--kraft); border-radius: 14px; padding: 11px; font-weight: 700; color: var(--kraft-escuro); cursor: pointer; background: color-mix(in srgb, var(--kraft) 6%, var(--superficie)); position: relative; }
+.logo-btn:hover { background: var(--kraft-claro); }
+.logo-btn:focus-within, .logo-zona:focus-within { outline: 2px solid var(--vinco); outline-offset: 2px; }
+.logo-zona { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: center; border: 2px dashed color-mix(in srgb, var(--kraft) 55%, var(--linha)); border-radius: 16px; padding: 14px; cursor: pointer; background: color-mix(in srgb, var(--kraft) 5%, var(--superficie)); position: relative; transition: background .15s; }
+.logo-zona:hover, .logo-zona.sobre-arquivo, .palco.sobre-arquivo { background: var(--kraft-claro); }
+.palco.sobre-arquivo { outline: 2px dashed var(--kraft); outline-offset: -6px; }
+.logo-mini { width: 64px; height: 64px; border-radius: 12px; border: 1px solid var(--linha); }
+.logo-ajustes { display: grid; gap: 14px; }
+input[type=range] { accent-color: var(--kraft); padding: 0 !important; background: none !important; border: 0 !important; }
+.campo-rot { font-size: 12px; color: var(--tinta-2); text-transform: uppercase; letter-spacing: .06em; }
+.palco { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.palco.arrastando { cursor: grabbing; }
+.palco.arrastando .caixa { transition: none; }
+.palco-rodape { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.face img { mix-blend-mode: multiply; }
+</style>
+
+<div class="aviso gut">Protótipo de demonstração. Preços, prazos, frete e pedidos são exemplos. Nenhum pagamento é realizado.</div>
+
+<header class="topo gut">
+  <div class="larg">
+    <a class="marca" href="#inicio">Sua<span>Marca</span> Embalagens</a>
+    <nav class="menu" aria-label="Seções da loja">
+      <a href="#inicio" data-r="inicio">Início</a>
+      <a href="#monte" data-r="monte">Monte sua caixa</a>
+      <a href="#catalogo" data-r="catalogo">Pronta entrega</a>
+      <a href="#pedidos" data-r="pedidos">Meus pedidos</a>
+      <span class="sep" aria-hidden="true"></span>
+      <a href="#fabrica" data-r="fabrica" class="fab">Painel da fábrica</a>
+    </nav>
+    <a class="carrinho-btn" href="#carrinho" data-r="carrinho">Carrinho <b id="qtd-carrinho">0</b></a>
+  </div>
+</header>
+
+<!-- ============ INÍCIO ============ -->
+<section class="visao" id="v-inicio">
+  <div class="banda gut">
+    <div class="larg hero">
+      <div class="hero-txt">
+        <span class="selo">Caixas de papelão direto da fábrica</span>
+        <h1>Caixas de papelão sustentáveis e resistentes, <em>com preço na hora</em></h1>
+        <p>Escolha o modelo, informe a medida, coloque a sua logo e veja a caixa pronta na tela. O preço aparece na hora e você paga com Pix ou boleto, sem esperar orçamento.</p>
+        <div class="hero-acoes">
+          <a class="btn btn-kraft" href="#monte">Monte sua caixa</a>
+          <a class="btn btn-vidro" href="#catalogo">Ver pronta entrega</a>
+        </div>
+        <div class="numeros" aria-label="Como a loja funciona">
+          <div><strong>Na hora</strong><span>preço sem esperar orçamento</span></div>
+          <div><strong>3D</strong><span>prévia com a logo do cliente</span></div>
+          <div><strong>24 h</strong><span>vendendo, inclusive à noite</span></div>
+          <div><strong>Pix</strong><span>boleto ou cartão</span></div>
+        </div>
+      </div>
+      <div class="hero-palco" aria-label="Simulador rápido">
+        <div class="palco-rodape"><span class="rotulo">Simule sua caixa</span><span class="dica">arraste para girar</span></div>
+        <div class="palco palco-mini"><div class="caixa" id="h-caixa"></div></div>
+        <label class="logo-btn" for="h-logo"><span id="h-logo-txt">＋ Coloque a sua logo na caixa</span><input type="file" id="h-logo" accept="image/*" class="sr"></label>
+        <div class="cotacao-rapida">
+          <label class="campo">Compr.<span class="unid"><input id="h-c" type="number" min="8" max="120" step="0.5" value="30"></span></label>
+          <label class="campo">Larg.<span class="unid"><input id="h-l" type="number" min="8" max="80" step="0.5" value="20"></span></label>
+          <label class="campo">Alt.<span class="unid"><input id="h-a" type="number" min="4" max="80" step="0.5" value="15"></span></label>
+        </div>
+        <div class="chips" id="h-qtd">
+          <button class="chip" type="button" data-q="250">250</button>
+          <button class="chip" type="button" data-q="500" aria-pressed="true">500</button>
+          <button class="chip" type="button" data-q="1000">1.000</button>
+          <button class="chip" type="button" data-q="2000">2.000</button>
+        </div>
+        <div class="cotacao-res"><div><strong id="h-total">—</strong> <span class="unit" id="h-unit"></span></div><a class="btn btn-kraft btn-peq" href="#monte" id="h-ir">Continuar</a></div>
+        <p class="dica" id="h-dica">Caixa maleta, onda B. Valores de exemplo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="gut">
+  <div class="larg corpo-inicio">
+
+    <div class="cab"><h2>Caixa certa para o seu segmento</h2><p>Toque no seu segmento e o configurador abre com uma medida inicial sugerida.</p></div>
+    <div class="segmentos" id="segmentos">
+      <a class="chip" href="#monte" data-seg="27,18,9,B">E-commerce</a>
+      <a class="chip" href="#monte" data-seg="20,14,8,B">Envio pelos Correios</a>
+      <a class="chip" href="#monte" data-seg="40,30,25,BC">Indústria</a>
+      <a class="chip" href="#monte" data-seg="35,25,20,BC">Indústria metalúrgica</a>
+      <a class="chip" href="#monte" data-seg="50,40,40,BC">Transporte</a>
+      <a class="chip" href="#monte" data-seg="40,30,12,B">Confecção</a>
+      <a class="chip" href="#monte" data-seg="45,35,30,BC">Distribuição de autopeças</a>
+      <a class="chip" href="#monte" data-seg="25,20,10,B">Brindes corporativos</a>
+      <a class="chip" href="#monte" data-seg="80,60,40,BC">Móveis</a>
+      <a class="chip" href="#monte" data-seg="30,30,30,BC">Produtos frágeis</a>
+    </div>
+
+    <div class="cab"><h2>Como o pedido acontece</h2></div>
+    <ol class="passos-lista">
+      <li><b>Medida, quantidade e impressão</b><span>Os mesmos três passos do orçamento de hoje, agora na tela. A prévia 3D e a faca técnica aparecem na tela.</span></li>
+      <li><b>Paga online</b><span>Pix com desconto, boleto para empresa ou cartão. O pedido entra na fila sem ninguém digitar nada.</span></li>
+      <li><b>Aprova a arte pelo celular</b><span>O designer monta o logo sobre a faca. O cliente aprova com um toque.</span></li>
+      <li><b>Acompanha até a entrega</b><span>Avisos automáticos no WhatsApp a cada etapa. Recompra em um clique.</span></li>
+    </ol>
+
+    <div class="dois">
+      <div class="caixa-bloco">
+        <h3>Quanto mais caixas, menor o preço</h3>
+        <div class="tabela-wrap">
+          <table>
+            <thead><tr><th>Quantidade</th><th>Desconto</th><th class="n">Caixa 30×20×15</th></tr></thead>
+            <tbody id="tabela-desc"></tbody>
+          </table>
+        </div>
+        <p class="dica">Preço por caixa, onda B, sem impressão. A tabela real usa o custo da fábrica.</p>
+      </div>
+      <div class="caixa-bloco">
+        <h3>O que a fábrica ganha com o site</h3>
+        <ul class="lista-check">
+          <li>Vende fora do horário comercial, inclusive para e-commerces de outras cidades.</li>
+          <li>Pedido pequeno se resolve sozinho. A equipe comercial fica com os grandes e com o corte e vinco.</li>
+          <li>Pedido chega com medidas, papelão, arte e pagamento confirmados.</li>
+          <li>Painel com o que entrou, o que está em produção e quem está na hora de recomprar.</li>
+        </ul>
+        <a class="btn btn-linha" href="#fabrica">Ver o painel da fábrica</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ============ CATÁLOGO ============ -->
+<section class="visao gut" id="v-catalogo" hidden>
+  <div class="larg">
+    <div class="cab">
+      <span class="rotulo">Caixas a pronta entrega · sai em 1 dia útil</span>
+      <h2>Tamanhos padrão em estoque</h2>
+      <p>Vendidos por pacote. Para Londrina e região, entrega própria; para fora, transportadora parceira.</p>
+    </div>
+    <div class="filtros" id="filtros">
+      <button class="chip" type="button" data-f="todos" aria-pressed="true">Todos</button>
+      <button class="chip" type="button" data-f="ecom">E-commerce</button>
+      <button class="chip" type="button" data-f="transp">Transporte e mudança</button>
+      <button class="chip" type="button" data-f="prot">Proteção</button>
+    </div>
+    <div class="produtos" id="produtos"></div>
+  </div>
+</section>
+
+<!-- ============ CONFIGURADOR ============ -->
+<section class="visao gut" id="v-monte" hidden>
+  <div class="larg">
+    <div class="cab">
+      <span class="rotulo">Configurador</span>
+      <h2>Monte sua caixa, veja o preço e feche o pedido</h2>
+      <p>Informe as medidas internas, a quantidade e envie seu logo. O preço sai na hora.</p>
+    </div>
+    <div class="grade">
+      <div class="passos">
+        <section class="caixa-bloco passo" aria-labelledby="p1">
+          <h2 id="p1"><span class="n">01</span>Modelo</h2>
+          <div class="modelos" role="radiogroup" aria-label="Modelo da caixa">
+            <label class="modelo"><input type="radio" name="modelo" value="maleta" checked id="m-maleta"><span class="cod">FEFCO 0201</span><b>Caixa maleta</b><small>Abas em cima e embaixo, vários tamanhos. Sem matriz de corte.</small></label>
+            <label class="modelo"><input type="radio" name="modelo" value="transpassada" id="m-trans"><span class="cod">FEFCO 0203</span><b>Caixa transpassada</b><small>Abas sobrepostas em cima e embaixo, mais resistência.</small></label>
+            <label class="modelo"><input type="radio" name="modelo" value="faca" id="m-faca"><span class="cod">CORTE E VINCO</span><b>Corte e vinco</b><small>Fecha sem fita. Precisa de matriz: vai para a equipe comercial.</small></label>
+          </div>
+        </section>
+
+        <section class="caixa-bloco passo" aria-labelledby="p2">
+          <h2 id="p2"><span class="n">02</span>Medidas internas e papelão</h2>
+          <div class="medidas">
+            <label class="campo">Comprimento<span class="unid"><input id="c" type="number" inputmode="decimal" min="8" max="120" step="0.5" value="30"></span></label>
+            <label class="campo">Largura<span class="unid"><input id="l" type="number" inputmode="decimal" min="8" max="80" step="0.5" value="20"></span></label>
+            <label class="campo">Altura<span class="unid"><input id="a" type="number" inputmode="decimal" min="4" max="80" step="0.5" value="15"></span></label>
+          </div>
+          <label class="campo">Papelão
+            <select id="onda">
+              <option value="B">Onda simples (B), até 15 kg</option>
+              <option value="BC">Onda dupla (BC), até 30 kg</option>
+            </select>
+          </label>
+          <details class="produto-det">
+            <summary>Não sabe a medida? Informe o tamanho do produto</summary>
+            <p class="dica">A caixa sugerida deixa 1 cm de folga em cada lado e escolhe o papelão pelo peso.</p>
+            <div class="linha-produto">
+              <label class="campo">Produto C<span class="unid"><input id="pc" type="number" min="1" step="0.5" value="26"></span></label>
+              <label class="campo">Produto L<span class="unid"><input id="pl" type="number" min="1" step="0.5" value="17"></span></label>
+              <label class="campo">Produto A<span class="unid"><input id="pa" type="number" min="1" step="0.5" value="12"></span></label>
+              <label class="campo">Peso (kg)<input id="pp" type="number" min="0.1" step="0.1" value="4"></label>
+              <button class="btn btn-linha" type="button" id="sugerir">Sugerir caixa</button>
+            </div>
+          </details>
+        </section>
+
+        <section class="caixa-bloco passo" aria-labelledby="p3">
+          <h2 id="p3"><span class="n">03</span>Quantidade</h2>
+          <div class="chips" id="chips-qtd">
+            <button class="chip" type="button" data-q="100">100</button>
+            <button class="chip" type="button" data-q="250">250<span class="desc">−6%</span></button>
+            <button class="chip" type="button" data-q="500" aria-pressed="true">500<span class="desc">−12%</span></button>
+            <button class="chip" type="button" data-q="1000">1.000<span class="desc">−18%</span></button>
+            <button class="chip" type="button" data-q="2000">2.000<span class="desc">−24%</span></button>
+          </div>
+          <div class="qtd-livre"><label class="campo">Outra quantidade<input id="qtd" type="number" min="100" step="50" value="500"></label><p class="dica">Mínimo de 100 unidades.</p></div>
+        </section>
+
+        <section class="caixa-bloco passo" aria-labelledby="p4">
+          <h2 id="p4"><span class="n">04</span>Sua logo e impressão</h2>
+          <div class="chips" id="chips-imp">
+            <button class="chip" type="button" data-i="0" aria-pressed="true">Sem impressão</button>
+            <button class="chip" type="button" data-i="1">1 cor</button>
+            <button class="chip" type="button" data-i="2">2 cores</button>
+          </div>
+          <label class="logo-zona" id="logo-zona" for="logo">
+            <span class="logo-mini" id="logo-mini" aria-hidden="true"><span class="dica">logo</span></span>
+            <span style="display:grid;gap:2px;min-width:0"><b id="logo-zona-txt">Arraste a sua logo para cá</b><span class="dica">ou toque para escolher · PNG, JPG ou SVG</span></span>
+            <input type="file" id="logo" accept="image/*" class="sr">
+          </label>
+          <div class="logo-ajustes" id="logo-ajustes" hidden>
+            <label class="campo">Tamanho da logo<input type="range" id="tam-logo" min="25" max="90" value="60"></label>
+            <div style="display:grid;gap:6px"><span class="campo-rot">Onde imprimir</span>
+              <div class="chips" id="faces">
+                <button class="chip" type="button" data-face="frente" aria-pressed="true">Frente e verso</button>
+                <button class="chip" type="button" data-face="lateral" aria-pressed="false">Laterais</button>
+                <button class="chip" type="button" data-face="topo" aria-pressed="false">Tampa</button>
+              </div>
+            </div>
+            <button class="remover" type="button" id="tirar-logo" style="justify-self:start">tirar a logo</button>
+          </div>
+          <p class="dica">A arte é conferida por um designer antes da produção. Você aprova pelo celular.</p>
+        </section>
+      </div>
+
+      <aside class="lateral" aria-label="Prévia e preço">
+        <div class="caixa-bloco">
+          <div class="abas" role="tablist">
+            <button role="tab" aria-selected="true" id="aba-3d" type="button">Prévia</button>
+            <button role="tab" aria-selected="false" id="aba-faca" type="button">Faca técnica</button>
+          </div>
+          <div id="vista-3d" style="display:grid;gap:10px"><div class="palco"><div class="caixa" id="caixa"></div></div>
+            <div class="palco-rodape"><span class="dica">Arraste a caixa para girar. Solte a logo em cima dela.</span><label class="btn btn-linha btn-peq" for="logo">＋ Sua logo</label></div></div>
+          <div id="vista-faca" hidden>
+            <div class="faca-wrap" id="faca"></div>
+            <div class="legenda"><span><i></i>corte</span><span><i class="v"></i>vinco (dobra)</span><span>medidas em mm</span></div>
+          </div>
+        </div>
+
+        <div class="caixa-bloco" id="bloco-preco" aria-live="polite">
+          <div class="total"><strong id="total">—</strong><span class="unit" id="unit">—</span></div>
+          <dl class="det" id="det"></dl>
+          <div class="prazo" id="prazo">—</div>
+          <div class="duas-acoes">
+            <button class="btn btn-linha" type="button" id="add-config">Pôr no carrinho</button>
+            <button class="btn btn-kraft" type="button" id="comprar-config">Comprar agora</button>
+          </div>
+          <p class="dica">Frete calculado pelo CEP no carrinho.</p>
+        </div>
+
+        <div class="caixa-bloco vendedor" id="bloco-vendedor" hidden>
+          <b>Corte e vinco vai direto para a equipe comercial</b>
+          <p class="dica">Caixas de corte e vinco precisam de matriz exclusiva. O pedido chega ao WhatsApp comercial da fábrica com medidas, quantidade e logo. O custo da matriz entra no orçamento.</p>
+          <label class="campo">Conte o que vai dentro da caixa<textarea id="esp-obs" rows="3">Kit com 3 potes de vidro, precisa de divisória interna.</textarea></label>
+          <button class="btn btn-kraft" type="button" id="falar-vendedor">Enviar para a equipe comercial</button>
+          <div class="zap" id="vendedor-ok" hidden></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CARRINHO / CHECKOUT ============ -->
+<section class="visao gut" id="v-carrinho" hidden>
+  <div class="larg">
+    <div class="cab">
+      <h2>Carrinho</h2>
+      <ol class="etapas" id="etapas"><li>Itens</li><li>Empresa</li><li>Entrega</li><li>Pagamento</li></ol>
+    </div>
+    <div class="carrinho-grade">
+      <div class="caixa-bloco" id="ck-principal"></div>
+      <aside class="caixa-bloco resumo-lado" aria-label="Resumo do pedido">
+        <h3>Resumo</h3>
+        <dl class="det" id="ck-resumo"></dl>
+        <div class="total"><span>Total</span><strong id="ck-total">—</strong></div>
+        <p class="dica" id="ck-pix-dica"></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEUS PEDIDOS ============ -->
+<section class="visao gut" id="v-pedidos" hidden>
+  <div class="larg">
+    <div class="cab">
+      <span class="rotulo">Área do cliente · Empresa Exemplo Ltda</span>
+      <h2>Meus pedidos</h2>
+      <p>Acompanhe cada etapa, aprove a arte e repita um pedido antigo em um clique.</p>
+    </div>
+    <div id="lista-pedidos" style="display:grid;gap:14px"></div>
+  </div>
+</section>
+
+<!-- ============ PAINEL DA FÁBRICA ============ -->
+<section class="visao gut" id="v-fabrica" hidden>
+  <div class="larg">
+    <div class="cab">
+      <span class="rotulo">Visão interna · só a equipe da fábrica vê</span>
+      <h2>Painel da fábrica</h2>
+      <p>Pedidos que entraram pelo site, fila de produção e clientes na hora de recomprar. Números de exemplo.</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="dois">
+      <div class="caixa-bloco grafico">
+        <h3>Vendas por mês</h3>
+        <div class="leg"><span><i style="background:var(--kraft)"></i>Pelo site</span><span><i style="background:var(--linha)"></i>Pelo vendedor</span></div>
+        <div id="grafico"></div>
+      </div>
+      <div class="caixa-bloco">
+        <h3>Na hora de recomprar</h3>
+        <p class="dica">O sistema calcula o ciclo de cada cliente e avisa antes de acabar o estoque dele.</p>
+        <div id="recompra"></div>
+      </div>
+    </div>
+    <div class="caixa-bloco">
+      <div class="pedido-topo"><h3>Fila de produção</h3><span class="dica">Cada avanço manda um aviso automático para o cliente.</span></div>
+      <div class="kanban-wrap"><div class="kanban" id="kanban"></div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="rodape gut">
+  <div class="larg">
+    <div><b>SuaMarca Embalagens</b>Caixas de papelão sob medida e a pronta entrega.</div>
+    <div><b>Atendimento</b>WhatsApp, e-mail e telefone da fábrica aparecem aqui.</div>
+    <div><b>Modelos</b>Maleta · Transpassada · Corte e vinco</div>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const inteiro = (v) => v.toLocaleString("pt-BR");
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // ---------- Preço (valores ilustrativos) ----------
+  const PRECO_M2 = { B: 3.4, BC: 5.1 };   // R$/m² de chapa
+  const CONVERSAO = 0.18;                 // R$/caixa de mão de obra e cola
+  const IMPRESSAO_UN = 0.22;              // R$/cor/caixa
+  const CLICHE = 260;                     // R$/cor, só no primeiro pedido
+  const descontoPor = (q) => (q >= 2000 ? 0.24 : q >= 1000 ? 0.18 : q >= 500 ? 0.12 : q >= 250 ? 0.06 : 0);
+  function chapa({ c, l, a }, mod) {
+    const comp = 2 * c + 2 * l + 4;
+    const larg = mod === "transpassada" ? a + 1.8 * l + 0.6 : a + l + 0.6;
+    return { comp, larg, m2: (comp * larg) / 10000 };
+  }
+  function precoSob(m, mod, onda, q, cores) {
+    const ch = chapa(m, mod);
+    const base = ch.m2 * PRECO_M2[onda] + CONVERSAO;
+    const desc = descontoPor(q);
+    const unit = (base + cores * IMPRESSAO_UN) * (1 - desc);
+    const cliche = cores * CLICHE;
+    return { ch, desc, unit, cliche, subtotal: unit * q, dias: cores ? 9 : 6 };
+  }
+
+  // ---------- Desenho isométrico de caixa (catálogo, carrinho, pedidos) ----------
+  function isoBox(c, l, a, w = 160, h = 120, fita = true) {
+    const cx = 0.866, sx = 0.5;
+    const P = (x, y, z) => [(x - y) * cx, (x + y) * sx - z];
+    const pts = [P(0, 0, a), P(c, 0, a), P(c, l, a), P(0, l, a), P(c, 0, 0), P(c, l, 0), P(0, l, 0)];
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+    const k = Math.min((w - 16) / (maxx - minx), (h - 16) / (maxy - miny));
+    const ox = (w - (maxx - minx) * k) / 2, oy = (h - (maxy - miny) * k) / 2;
+    const m = (x, y, z) => { const p = P(x, y, z); return `${((p[0] - minx) * k + ox).toFixed(1)},${((p[1] - miny) * k + oy).toFixed(1)}`; };
+    const poly = (cor, ...v) => `<polygon points="${v.join(" ")}" fill="${cor}" stroke="rgb(0 0 0 / .18)" stroke-width="1" stroke-linejoin="round"/>`;
+    const topo = poly("var(--face-3)", m(0, 0, a), m(c, 0, a), m(c, l, a), m(0, l, a));
+    const dir = poly("var(--face-2)", m(c, 0, a), m(c, l, a), m(c, l, 0), m(c, 0, 0));
+    const esq = poly("var(--face-1)", m(0, l, a), m(c, l, a), m(c, l, 0), m(0, l, 0));
+    const f = fita ? `<line x1="${m(0, l / 2, a).split(",")[0]}" y1="${m(0, l / 2, a).split(",")[1]}" x2="${m(c, l / 2, a).split(",")[0]}" y2="${m(c, l / 2, a).split(",")[1]}" stroke="rgb(0 0 0 / .2)" stroke-width="2"/>` : "";
+    return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true">${topo}${dir}${esq}${f}</svg>`;
+  }
+
+  // ---------- Catálogo ----------
+  const CATALOGO = [
+    { id: "ecp", cat: "ecom", nome: "Caixa e-commerce P", m: [16, 11, 6], onda: "B", un: 1.15, pac: 25, uso: "Acessórios, cosméticos, peças pequenas" },
+    { id: "ecm", cat: "ecom", nome: "Caixa e-commerce M", m: [27, 18, 9], onda: "B", un: 1.85, pac: 25, uso: "Roupas, calçados infantis, kits" },
+    { id: "ecg", cat: "ecom", nome: "Caixa e-commerce G", m: [36, 27, 18], onda: "B", un: 3.1, pac: 20, uso: "Calçados, eletrônicos, utilidades" },
+    { id: "mud", cat: "transp", nome: "Caixa de mudança", m: [40, 30, 30], onda: "BC", un: 4.4, pac: 10, uso: "Mudança, estoque, transporte" },
+    { id: "gg", cat: "transp", nome: "Caixa de transporte GG", m: [50, 40, 40], onda: "BC", un: 6.2, pac: 10, uso: "Volumes grandes, até 30 kg" },
+    { id: "arq", cat: "transp", nome: "Caixa arquivo morto", m: [36, 13, 25], onda: "B", un: 2.4, pac: 25, uso: "Escritórios, contabilidade, documentos" },
+    { id: "chapa", cat: "prot", nome: "Chapa de papelão", m: [120, 100, 0.6], onda: "B", un: 4.9, pac: 10, uso: "Forrar, separar camadas no palete", sem: true, medida: "1,20 × 1,00 m" },
+    { id: "cant", cat: "prot", nome: "Cantoneira de papelão", m: [100, 3.5, 3.5], onda: "—", un: 0.95, pac: 50, uso: "Proteger quinas no palete", sem: true, medida: "35 × 35 mm × 1 m" },
+  ];
+  let filtro = "todos";
+  function renderCatalogo() {
+    $("produtos").innerHTML = CATALOGO.filter((p) => filtro === "todos" || p.cat === filtro).map((p) => `
+      <article class="prod">
+        <div class="ilus">${isoBox(...p.m, 160, 120, !p.sem)}</div>
+        <div><span class="med">${p.medida || p.m.join(" × ") + " cm"}${p.onda !== "—" ? " · onda " + p.onda : ""}</span><h3>${p.nome}</h3></div>
+        <p class="dica">${p.uso}</p>
+        <div style="display:grid;gap:8px">
+          <div class="preco-linha"><strong>${brl(p.un * p.pac)}</strong><span class="dica">pacote com ${p.pac} · ${brl(p.un)}/un</span></div>
+          <div class="comprar">
+            <div class="stepper"><button type="button" data-menos="${p.id}" aria-label="Menos um pacote">−</button><input id="q-${p.id}" value="1" inputmode="numeric" aria-label="Pacotes de ${p.nome}"><button type="button" data-mais="${p.id}" aria-label="Mais um pacote">+</button></div>
+            <button class="btn btn-kraft btn-peq" type="button" data-add="${p.id}" style="flex:1">Pôr no carrinho</button>
+          </div>
+        </div>
+      </article>`).join("");
+  }
+  $("filtros").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    filtro = b.dataset.f;
+    $("filtros").querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderCatalogo();
+  });
+  $("produtos").addEventListener("click", (e) => {
+    const t = e.target.closest("button"); if (!t) return;
+    const id = t.dataset.menos || t.dataset.mais || t.dataset.add;
+    const inp = $("q-" + id); let v = Math.max(1, parseInt(inp.value, 10) || 1);
+    if (t.dataset.menos) inp.value = Math.max(1, v - 1);
+    else if (t.dataset.mais) inp.value = v + 1;
+    else {
+      const p = CATALOGO.find((x) => x.id === id);
+      adicionar({ tipo: "pronta", nome: p.nome, desc: `${p.medida || p.m.join("×") + " cm"} · ${v} ${v > 1 ? "pacotes" : "pacote"} de ${p.pac}`, qtd: v * p.pac, unit: p.un, extra: 0, m: p.m, fita: !p.sem, cores: 0, dias: 1, m2: 0.25 });
+      toastSimples(`${p.nome} no carrinho.`, "#carrinho", "Ver carrinho");
+    }
+  });
+
+  // ---------- Configurador ----------
+  const NOMES = { maleta: "Caixa maleta", transpassada: "Caixa transpassada" };
+  const cfg = { qtd: 500, cores: 0, logo: null, tamLogo: 60, faces: { frente: true, lateral: false, topo: false } };
+  const modelo = () => document.querySelector('input[name="modelo"]:checked').value;
+  function medidas() {
+    const n = (id, min) => Math.max(min, Number($(id).value) || min);
+    return { c: n("c", 8), l: n("l", 8), a: n("a", 4) };
+  }
+  function calcular() {
+    const mod = modelo(), m = medidas(), onda = $("onda").value, q = Math.max(100, cfg.qtd);
+    return { mod, m, onda, q, ...precoSob(m, mod === "faca" ? "maleta" : mod, onda, q, cfg.cores) };
+  }
+  function renderConfig() {
+    const faca = modelo() === "faca";
+    $("bloco-preco").hidden = faca;
+    $("bloco-vendedor").hidden = !faca;
+    const r = calcular();
+    $("total").textContent = brl(r.subtotal + r.cliche);
+    $("unit").textContent = `${brl(r.unit)} / caixa`;
+    const linhas = [
+      [`${inteiro(r.q)} caixas × ${brl(r.unit)}`, brl(r.subtotal)],
+      [`Chapa por caixa`, `${r.ch.m2.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} m²`],
+      ...(r.desc ? [[`Desconto por quantidade`, `−${Math.round(r.desc * 100)}%`, "desconto"]] : []),
+      ...(r.cliche ? [[`Clichê de impressão (${cfg.cores} ${cfg.cores > 1 ? "cores" : "cor"}, só no 1º pedido)`, brl(r.cliche)]] : []),
+    ];
+    $("det").innerHTML = linhas.map(([k, v, cls]) => `<dt>${k}</dt><dd class="${cls || ""}">${v}</dd>`).join("");
+    $("prazo").textContent = `Produção em ${r.dias} dias úteis${cfg.cores ? " após aprovar a arte" : ""}`;
+    desenharCaixa(r.m);
+    desenharFaca($("faca"), r.m, r.mod, cfg.logo && cfg.cores ? cfg.logo : null);
+  }
+  const giro = {};
+  function aplicarGiro(alvo) {
+    const g = giro[alvo] || (giro[alvo] = { x: -24, y: -36 });
+    $(alvo).style.transform = `rotateX(${g.x}deg) rotateY(${g.y}deg)`;
+  }
+  function desenharCaixa({ c, l, a }, alvo = "caixa", tam = 150) {
+    const k = tam / Math.max(c, l, a);
+    const W = c * k, D = l * k, H = a * k;
+    const tem = cfg.logo && cfg.cores;
+    const img = (t) => (tem ? `<img src="${cfg.logo}" alt="" style="max-width:${t}%;max-height:${t}%">` : "");
+    const t = cfg.tamLogo;
+    const frente = cfg.faces.frente ? img(t) || (cfg.cores ? `<span class="marca-face">sua logo</span>` : "") : "";
+    const lado = cfg.faces.lateral ? img(t) : "", topo = cfg.faces.topo ? img(t * 0.85) : "";
+    const face = (cls, w, h, tr, conteudo = "") => `<div class="face ${cls}" style="width:${w}px;height:${h}px;margin:${-h / 2}px 0 0 ${-w / 2}px;transform:${tr}">${conteudo}</div>`;
+    $(alvo).innerHTML =
+      face("f-frente", W, H, `translateZ(${D / 2}px)`, frente) +
+      face("f-tras", W, H, `rotateY(180deg) translateZ(${D / 2}px)`, cfg.faces.frente ? img(t) : "") +
+      face("f-dir", D, H, `rotateY(90deg) translateZ(${W / 2}px)`, lado) +
+      face("f-esq", D, H, `rotateY(-90deg) translateZ(${W / 2}px)`, lado) +
+      face("f-topo", W, D, `rotateX(90deg) translateZ(${H / 2}px)`, topo) +
+      face("f-base", W, D, `rotateX(-90deg) translateZ(${H / 2}px)`);
+    aplicarGiro(alvo);
+  }
+  // Faca planificada em mm: painéis C, L, C, L + aba de cola; abas em cima e embaixo
+  function desenharFaca(alvo, { c, l, a }, mod, logo) {
+    const mm = (v) => v * 10;
+    const aba = mod === "transpassada" ? 0.9 * l : l / 2;
+    const cola = 40, P = [c, l, c, l].map(mm), H = mm(a), F = mm(aba);
+    const W = cola + P.reduce((s, v) => s + v, 0), TOT = F * 2 + H;
+    const pad = 70, vbW = W + pad * 2, vbH = TOT + pad * 2;
+    const sw = Math.max(vbW, vbH) / 260, fs = Math.max(vbW, vbH) / 34;
+    const x0 = pad + cola;
+    let x = x0, cortes = `M${x0} ${pad + F} L${pad} ${pad + F + 12} L${pad} ${pad + F + H - 12} L${x0} ${pad + F + H} M${x0} ${pad} L${x0} ${pad + F} M${x0} ${pad + F + H} L${x0} ${pad + TOT} `;
+    const vincos = [`M${x0} ${pad + F} L${x0} ${pad + F + H}`];
+    let topo = "", base = "";
+    P.forEach((w, i) => {
+      topo += `M${x + 3} ${pad} L${x + w - 3} ${pad} `;
+      base += `M${x + 3} ${pad + TOT} L${x + w - 3} ${pad + TOT} `;
+      if (i < P.length - 1) {
+        vincos.push(`M${x + w} ${pad + F} L${x + w} ${pad + F + H}`);
+        cortes += `M${x + w} ${pad} L${x + w} ${pad + F} M${x + w} ${pad + F + H} L${x + w} ${pad + TOT} `;
+      }
+      vincos.push(`M${x} ${pad + F} L${x + w} ${pad + F}`, `M${x} ${pad + F + H} L${x + w} ${pad + F + H}`);
+      x += w;
+    });
+    cortes += `M${x} ${pad} L${x} ${pad + TOT} ` + topo + base;
+    const cota = (x1, y1, x2, y2, txt, vert) => {
+      const tx = (x1 + x2) / 2 + (vert ? -fs * 0.6 : 0), ty = (y1 + y2) / 2 + (vert ? 0 : -fs * 0.5);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--tinta-2)" stroke-width="${sw * 0.6}"/>` +
+        `<text x="${tx}" y="${ty}" font-size="${fs}" fill="var(--tinta-2)" font-family="IBM Plex Mono, monospace" text-anchor="middle" ${vert ? `transform="rotate(-90 ${tx} ${ty})"` : ""}>${txt}</text>`;
+    };
+    let xi = x0, cotas = "";
+    P.forEach((w) => { cotas += cota(xi, pad - fs * 0.9, xi + w, pad - fs * 0.9, Math.round(w)); xi += w; });
+    cotas += cota(pad + W + fs * 1.2, pad + F, pad + W + fs * 1.2, pad + F + H, Math.round(H), true);
+    cotas += cota(pad + W + fs * 1.2, pad, pad + W + fs * 1.2, pad + F, Math.round(F), true);
+    const arte = logo && logo.startsWith("data:")
+      ? `<image href="${logo}" x="${x0 + P[0] * 0.15}" y="${pad + F + H * 0.15}" width="${P[0] * 0.7}" height="${H * 0.7}" preserveAspectRatio="xMidYMid meet"/>`
+      : logo
+      ? `<rect x="${x0 + P[0] * 0.2}" y="${pad + F + H * 0.25}" width="${P[0] * 0.6}" height="${H * 0.5}" fill="none" stroke="var(--kraft-escuro)" stroke-width="${sw}" stroke-dasharray="${sw * 2} ${sw * 2}"/><text x="${x0 + P[0] / 2}" y="${pad + F + H / 2 + fs * 0.35}" font-size="${fs * 1.1}" fill="var(--kraft-escuro)" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700">${esc(logo)}</text>`
+      : `<text x="${x0 + P[0] / 2}" y="${pad + F + H / 2}" font-size="${fs * 0.9}" fill="var(--tinta-2)" text-anchor="middle" font-family="DM Sans, sans-serif">frente</text>`;
+    alvo.innerHTML = `<svg viewBox="0 0 ${vbW} ${vbH}" role="img" aria-label="Faca técnica planificada da caixa">
+      <rect x="${pad}" y="${pad}" width="${W}" height="${TOT}" fill="color-mix(in srgb, var(--kraft) 10%, transparent)"/>
+      <path d="${cortes}" fill="none" stroke="var(--corte)" stroke-width="${sw}"/>
+      <path d="${vincos.join(" ")}" fill="none" stroke="var(--vinco)" stroke-width="${sw}" stroke-dasharray="${sw * 5} ${sw * 3}"/>
+      ${cotas}${arte}</svg>`;
+  }
+  document.querySelectorAll('input[name="modelo"]').forEach((el) => el.addEventListener("change", renderConfig));
+  ["c", "l", "a", "onda"].forEach((id) => $(id).addEventListener("input", renderConfig));
+  function marcarChips(caixa, el) { caixa.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x === el))); }
+  $("chips-qtd").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    cfg.qtd = Number(b.dataset.q); $("qtd").value = cfg.qtd; marcarChips($("chips-qtd"), b); renderConfig();
+  });
+  $("qtd").addEventListener("input", () => {
+    cfg.qtd = Math.max(100, Number($("qtd").value) || 100);
+    $("chips-qtd").querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(Number(x.dataset.q) === cfg.qtd))); renderConfig();
+  });
+  $("chips-imp").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    cfg.cores = Number(b.dataset.i); marcarChips($("chips-imp"), b); renderConfig();
+  });
+  function carregarLogo(f) {
+    if (!f || !f.type.startsWith("image/")) { toastSimples("Envie a logo como imagem: PNG, JPG ou SVG."); return; }
+    const rd = new FileReader();
+    rd.onload = () => {
+      cfg.logo = rd.result;
+      $("logo-mini").innerHTML = `<img src="${rd.result}" alt="Logo enviada">`;
+      $("logo-zona-txt").textContent = "Logo carregada. Arraste outra para trocar.";
+      $("h-logo-txt").textContent = "✓ Logo na caixa. Toque para trocar";
+      $("logo-ajustes").hidden = false;
+      if (!cfg.cores) { cfg.cores = 1; marcarChips($("chips-imp"), $("chips-imp").querySelector('[data-i="1"]')); }
+      renderConfig(); renderHero();
+    };
+    rd.readAsDataURL(f);
+  }
+  ["logo", "h-logo"].forEach((id) => $(id).addEventListener("change", (e) => { carregarLogo(e.target.files[0]); e.target.value = ""; }));
+  document.querySelectorAll(".logo-zona, .palco").forEach((z) => {
+    z.addEventListener("dragover", (e) => { e.preventDefault(); z.classList.add("sobre-arquivo"); });
+    z.addEventListener("dragleave", () => z.classList.remove("sobre-arquivo"));
+    z.addEventListener("drop", (e) => { e.preventDefault(); z.classList.remove("sobre-arquivo"); carregarLogo(e.dataTransfer.files[0]); });
+  });
+  $("tam-logo").addEventListener("input", (e) => { cfg.tamLogo = Number(e.target.value); renderConfig(); renderHero(); });
+  $("faces").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-face]"); if (!b) return;
+    cfg.faces[b.dataset.face] = !cfg.faces[b.dataset.face];
+    b.setAttribute("aria-pressed", String(cfg.faces[b.dataset.face]));
+    renderConfig(); renderHero();
+  });
+  $("tirar-logo").addEventListener("click", () => {
+    cfg.logo = null;
+    $("logo-mini").innerHTML = '<span class="dica">logo</span>';
+    $("logo-zona-txt").textContent = "Arraste a sua logo para cá";
+    $("h-logo-txt").textContent = "＋ Coloque a sua logo na caixa";
+    $("logo-ajustes").hidden = true;
+    renderConfig(); renderHero();
+  });
+  // Girar a caixa arrastando (mouse ou dedo)
+  document.querySelectorAll(".palco").forEach((p) => {
+    let ini = null;
+    p.addEventListener("pointerdown", (e) => { ini = { x: e.clientX, y: e.clientY }; p.classList.add("arrastando"); p.setPointerCapture(e.pointerId); });
+    p.addEventListener("pointermove", (e) => {
+      if (!ini) return;
+      const id = p.querySelector(".caixa").id, g = giro[id] || (giro[id] = { x: -24, y: -36 });
+      g.y += (e.clientX - ini.x) * 0.6; g.x = Math.max(-75, Math.min(15, g.x - (e.clientY - ini.y) * 0.4));
+      ini = { x: e.clientX, y: e.clientY }; aplicarGiro(id);
+    });
+    const fim = () => { ini = null; p.classList.remove("arrastando"); };
+    p.addEventListener("pointerup", fim); p.addEventListener("pointercancel", fim);
+  });
+  $("sugerir").addEventListener("click", () => {
+    const v = (id) => Number($(id).value) || 0;
+    $("c").value = v("pc") + 2; $("l").value = v("pl") + 2; $("a").value = v("pa") + 2;
+    $("onda").value = v("pp") > 12 ? "BC" : "B"; renderConfig();
+  });
+  const abas = [["aba-3d", "vista-3d"], ["aba-faca", "vista-faca"]];
+  abas.forEach(([b, v]) => $(b).addEventListener("click", () => abas.forEach(([b2, v2]) => { $(b2).setAttribute("aria-selected", String(b2 === b)); $(v2).hidden = b2 !== b; })));
+  function itemDaConfig() {
+    const r = calcular();
+    return { tipo: r.mod, logo: cfg.cores ? cfg.logo : null, nome: NOMES[r.mod], desc: `${r.m.c}×${r.m.l}×${r.m.a} cm · onda ${r.onda} · ${cfg.cores ? cfg.cores + (cfg.cores > 1 ? " cores" : " cor") : "sem impressão"}`,
+      qtd: r.q, unit: r.unit, extra: r.cliche, m: [r.m.c, r.m.l, r.m.a], medidas: r.m, fita: true, cores: cfg.cores, dias: r.dias, m2: r.ch.m2 };
+  }
+  $("add-config").addEventListener("click", () => { adicionar(itemDaConfig()); toastSimples("Caixa sob medida no carrinho.", "#carrinho", "Ver carrinho"); });
+  $("comprar-config").addEventListener("click", () => { adicionar(itemDaConfig()); location.hash = "carrinho"; });
+  $("falar-vendedor").addEventListener("click", () => {
+    const m = medidas();
+    $("vendedor-ok").hidden = false;
+    $("vendedor-ok").innerHTML = `<b>Pedido de formato especial</b><br>${inteiro(Math.max(100, cfg.qtd))} caixas · ${m.c}×${m.l}×${m.a} cm · onda ${$("onda").value}<br>${esc($("esp-obs").value)}<small>Mensagem que chegaria ao WhatsApp comercial da fábrica. Aqui é só demonstração.</small>`;
+  });
+
+  // ---------- Cotação rápida da vitrine ----------
+  let hQtd = 500;
+  function renderHero() {
+    const n = (id, min) => Math.max(min, Number($(id).value) || min);
+    const r = precoSob({ c: n("h-c", 8), l: n("h-l", 8), a: n("h-a", 4) }, "maleta", "B", hQtd, cfg.logo ? Math.max(1, cfg.cores) : 0);
+    $("h-total").textContent = brl(r.subtotal + r.cliche);
+    $("h-dica").textContent = cfg.logo ? `Caixa maleta, onda B, logo em ${Math.max(1, cfg.cores)} ${cfg.cores > 1 ? "cores" : "cor"} (clichê incluso). Valores de exemplo.` : "Caixa maleta, onda B, sem impressão. Valores de exemplo.";
+    $("h-unit").textContent = `${inteiro(hQtd)} × ${brl(r.unit)}`;
+    desenharCaixa({ c: n("h-c", 8), l: n("h-l", 8), a: n("h-a", 4) }, "h-caixa", 150);
+  }
+  ["h-c", "h-l", "h-a"].forEach((id) => $(id).addEventListener("input", renderHero));
+  $("h-qtd").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (!b) return; hQtd = Number(b.dataset.q); marcarChips($("h-qtd"), b); renderHero(); });
+  $("h-ir").addEventListener("click", () => {
+    $("c").value = $("h-c").value; $("l").value = $("h-l").value; $("a").value = $("h-a").value;
+    cfg.qtd = hQtd; $("qtd").value = hQtd;
+    $("chips-qtd").querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(Number(x.dataset.q) === hQtd)));
+    renderConfig();
+  });
+  $("tabela-desc").innerHTML = [100, 250, 500, 1000, 2000].map((q) => {
+    const r = precoSob({ c: 30, l: 20, a: 15 }, "maleta", "B", q, 0);
+    return `<tr><td class="num">${inteiro(q)}</td><td class="num">${r.desc ? "−" + Math.round(r.desc * 100) + "%" : "—"}</td><td class="n">${brl(r.unit)}</td></tr>`;
+  }).join("");
+
+  // ---------- Carrinho e checkout ----------
+  let carrinho = [];
+  let seq = 1;
+  const ck = { etapa: 0, frete: null, freteNome: "", cep: "86010-000", pg: "pix", empresa: { razao: "Empresa Exemplo Ltda", cnpj: "00.000.000/0001-00", nome: "Comprador Exemplo", zap: "(43) 90000-0000", email: "compras@exemplo.com.br" } };
+  function adicionar(item) { carrinho.push({ ...item, id: seq++ }); ck.frete = null; atualizarContador(); }
+  function atualizarContador() { $("qtd-carrinho").textContent = carrinho.length; }
+  const subtotal = () => carrinho.reduce((s, i) => s + i.unit * i.qtd + i.extra, 0);
+  const temImpressao = () => carrinho.some((i) => i.cores > 0);
+  const prazoMax = () => carrinho.reduce((s, i) => Math.max(s, i.dias), 0);
+  function opcoesFrete() {
+    const d = ck.cep.replace(/\D/g, ""); if (d.length !== 8) return null;
+    const n = Number(d.slice(0, 5)), sub = subtotal();
+    const volume = carrinho.reduce((s, i) => s + i.m2 * i.qtd, 0);
+    if (n >= 86000 && n <= 86199) return [
+      { id: "propria", nome: "Entrega própria em Londrina e região", prazo: "1 dia útil após a produção", v: sub >= 800 ? 0 : 45 },
+      { id: "retira", nome: "Retirar na fábrica", prazo: "no dia em que ficar pronto", v: 0 },
+    ];
+    if (n >= 80000 && n <= 87999) return [
+      { id: "transp", nome: "Transportadora parceira (PR)", prazo: "2 a 4 dias úteis", v: Math.round(90 + volume * 0.35) },
+      { id: "retira", nome: "Retirar na fábrica", prazo: "no dia em que ficar pronto", v: 0 },
+    ];
+    return [{ id: "transp", nome: "Transportadora parceira", prazo: "4 a 8 dias úteis", v: Math.round(160 + volume * 0.6) }];
+  }
+  const descontoPix = () => (ck.pg === "pix" ? (subtotal() + (ck.frete ?? 0)) * 0.03 : 0);
+  const totalPedido = () => subtotal() + (ck.frete ?? 0) - descontoPix();
+
+  function renderResumo() {
+    const linhas = [[`Itens (${carrinho.length})`, brl(subtotal())]];
+    if (ck.frete !== null) linhas.push([`Frete`, ck.frete === 0 ? "grátis" : brl(ck.frete)]);
+    else linhas.push([`Frete`, "informe o CEP"]);
+    if (ck.etapa >= 3 && ck.pg === "pix") linhas.push([`Desconto Pix (3%)`, "−" + brl(descontoPix()), "desconto"]);
+    $("ck-resumo").innerHTML = linhas.map(([k, v, c]) => `<dt>${k}</dt><dd class="${c || ""}">${v}</dd>`).join("");
+    $("ck-total").textContent = brl(totalPedido());
+    $("ck-pix-dica").textContent = carrinho.length ? (prazoMax() ? `Produção em até ${prazoMax()} ${prazoMax() > 1 ? "dias úteis" : "dia útil"}${temImpressao() ? " após aprovar a arte" : ""}.` : "") : "";
+    const nomes = ["Itens", "Empresa", "Entrega", "Pagamento"];
+    $("etapas").innerHTML = nomes.map((n, i) => `<li class="${i === ck.etapa ? "atual" : i < ck.etapa ? "feita" : ""}">${i < ck.etapa ? "✓ " : ""}${n}</li>`).join("");
+  }
+  function renderCarrinho() {
+    const el = $("ck-principal");
+    if (!carrinho.length) {
+      ck.etapa = 0;
+      el.innerHTML = `<div class="vazio"><div style="width:120px">${isoBox(30, 20, 15, 120, 90)}</div><b>Seu carrinho está vazio</b><span>Monte uma caixa sob medida ou escolha um tamanho em estoque.</span><div class="hero-acoes" style="justify-content:center"><a class="btn btn-kraft" href="#monte">Monte sua caixa</a><a class="btn btn-linha" href="#catalogo">Pronta entrega</a></div></div>`;
+      renderResumo(); return;
+    }
+    const botoes = (voltar, avancar, idAv = "ck-av") => `<div class="hero-acoes" style="justify-content:space-between">${voltar ? `<button class="btn btn-linha" type="button" id="ck-volta">Voltar</button>` : "<span></span>"}<button class="btn btn-kraft" type="button" id="${idAv}">${avancar}</button></div>`;
+    if (ck.etapa === 0) {
+      el.innerHTML = `<h3>Itens</h3><div>${carrinho.map((i) => `
+        <div class="item"><div class="ilus">${isoBox(...i.m, 64, 52, i.fita)}</div>
+          <div style="min-width:0"><div class="nome">${esc(i.nome)}</div><div class="sub">${esc(i.desc)}</div><div class="sub num">${inteiro(i.qtd)} un × ${brl(i.unit)}${i.extra ? " + clichê " + brl(i.extra) : ""}</div></div>
+          <div class="val"><b>${brl(i.unit * i.qtd + i.extra)}</b><button class="remover" type="button" data-rem="${i.id}">remover</button></div></div>`).join("")}</div>
+        ${botoes(false, "Continuar")}`;
+    } else if (ck.etapa === 1) {
+      const e = ck.empresa;
+      el.innerHTML = `<h3>Dados da empresa</h3><p class="dica">Preenchido com dados de exemplo. Com o CNPJ, o site real busca razão social e endereço sozinho.</p>
+        <form class="form-grade" id="f-emp">
+          <label class="campo">CNPJ<input id="e-cnpj" value="${esc(e.cnpj)}" required></label>
+          <label class="campo">Razão social<input id="e-razao" value="${esc(e.razao)}" required></label>
+          <label class="campo">Quem compra<input id="e-nome" value="${esc(e.nome)}" required></label>
+          <label class="campo">WhatsApp<input id="e-zap" value="${esc(e.zap)}" required></label>
+          <label class="campo inteira">E-mail para nota fiscal<input id="e-email" type="email" value="${esc(e.email)}" required></label>
+        </form>${botoes(true, "Continuar")}`;
+    } else if (ck.etapa === 2) {
+      const ops = opcoesFrete();
+      el.innerHTML = `<h3>Entrega</h3>
+        <div class="qtd-livre"><label class="campo" style="width:180px">CEP<input id="ck-cep" inputmode="numeric" maxlength="9" value="${esc(ck.cep)}"></label><p class="dica">Teste um CEP de Londrina (86010-000), do Paraná (80010-000) ou de outro estado (01310-100).</p></div>
+        <div class="opcoes" role="radiogroup" aria-label="Forma de entrega">${ops ? ops.map((o, i) => `
+          <label class="modelo"><input type="radio" name="frete" value="${o.id}" ${(ck.freteNome ? ck.freteNome === o.nome : i === 0) ? "checked" : ""} id="fr-${o.id}"><b>${o.nome}</b><small>${o.prazo}</small><span class="v">${o.v ? brl(o.v) : "grátis"}</span></label>`).join("") : `<p class="dica">Digite um CEP com 8 números.</p>`}</div>
+        ${botoes(true, "Ir para o pagamento")}`;
+      if (ops) escolherFrete();
+    } else if (ck.etapa === 3) {
+      el.innerHTML = `<h3>Pagamento</h3>
+        <div class="opcoes" role="radiogroup" aria-label="Forma de pagamento">
+          <label class="modelo"><input type="radio" name="pg" value="pix" id="pg-pix" ${ck.pg === "pix" ? "checked" : ""}><b>Pix</b><small>Aprovação na hora, 3% de desconto</small><span class="v">−3%</span></label>
+          <label class="modelo"><input type="radio" name="pg" value="boleto" id="pg-boleto" ${ck.pg === "boleto" ? "checked" : ""}><b>Boleto para empresa</b><small>28 dias, sujeito a análise do CNPJ</small><span class="v">PJ</span></label>
+          <label class="modelo"><input type="radio" name="pg" value="cartao" id="pg-cartao" ${ck.pg === "cartao" ? "checked" : ""}><b>Cartão</b><small>Até 3x sem juros</small><span class="v">3x</span></label>
+        </div>
+        <div class="pix" id="ck-pix" ${ck.pg === "pix" ? "" : "hidden"}><div class="qr"><canvas id="qr" width="29" height="29" aria-label="QR Code de demonstração"></canvas></div>
+          <p class="dica">QR de <b>demonstração</b>. No site real, o pagamento confirma sozinho e o pedido vai para a fila da fábrica.</p></div>
+        <p class="dica" id="ck-outro" ${ck.pg === "pix" ? "hidden" : ""}>No site real, esta etapa abre a tela segura do banco ou da operadora. Aqui é só demonstração.</p>
+        ${botoes(true, "Simular pagamento aprovado", "ck-pagar")}`;
+      desenharQR();
+    }
+    renderResumo();
+  }
+  function escolherFrete() {
+    const ops = opcoesFrete(); const sel = document.querySelector('input[name="frete"]:checked');
+    const o = ops && sel ? ops.find((x) => x.id === sel.value) : null;
+    ck.frete = o ? o.v : null; ck.freteNome = o ? o.nome : "";
+    renderResumo();
+  }
+  $("ck-principal").addEventListener("click", (e) => {
+    const t = e.target.closest("button"); if (!t) return;
+    if (t.dataset.rem) { carrinho = carrinho.filter((i) => i.id !== Number(t.dataset.rem)); ck.frete = null; atualizarContador(); renderCarrinho(); return; }
+    if (t.id === "ck-volta") { ck.etapa = Math.max(0, ck.etapa - 1); renderCarrinho(); return; }
+    if (t.id === "ck-av") {
+      if (ck.etapa === 1) {
+        const f = $("f-emp"); if (!f.reportValidity()) return;
+        ck.empresa = { cnpj: $("e-cnpj").value, razao: $("e-razao").value, nome: $("e-nome").value, zap: $("e-zap").value, email: $("e-email").value };
+      }
+      if (ck.etapa === 2 && ck.frete === null) { $("ck-cep").focus(); return; }
+      ck.etapa++; renderCarrinho(); return;
+    }
+    if (t.id === "ck-pagar") finalizar();
+  });
+  $("ck-principal").addEventListener("input", (e) => {
+    if (e.target.id === "ck-cep") {
+      let d = e.target.value.replace(/\D/g, "").slice(0, 8); if (d.length > 5) d = d.slice(0, 5) + "-" + d.slice(5);
+      e.target.value = d; const mudou = ck.cep !== d; ck.cep = d;
+      if (mudou && d.replace("-", "").length === 8) { ck.freteNome = ""; renderCarrinho(); const c = $("ck-cep"); c.focus(); c.setSelectionRange(9, 9); }
+      else if (d.replace("-", "").length < 8) { ck.frete = null; renderResumo(); }
+    }
+  });
+  $("ck-principal").addEventListener("change", (e) => {
+    if (e.target.name === "frete") escolherFrete();
+    if (e.target.name === "pg") { ck.pg = e.target.value; $("ck-pix").hidden = ck.pg !== "pix"; $("ck-outro").hidden = ck.pg === "pix"; renderResumo(); }
+  });
+  function desenharQR() {
+    const cv = $("qr"); if (!cv) return;
+    const ctx = cv.getContext("2d"), n = 29;
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, n, n); ctx.fillStyle = "#111";
+    let s = 7; const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (rnd() > 0.52) ctx.fillRect(x, y, 1, 1);
+    [[0, 0], [n - 7, 0], [0, n - 7]].forEach(([x, y]) => { ctx.fillStyle = "#111"; ctx.fillRect(x, y, 7, 7); ctx.fillStyle = "#fff"; ctx.fillRect(x + 1, y + 1, 5, 5); ctx.fillStyle = "#111"; ctx.fillRect(x + 2, y + 2, 3, 3); });
+  }
+
+  // ---------- Pedidos (exemplos + os feitos nesta demonstração) ----------
+  const ETAPAS = { pago: "Pagamento aprovado", arte: "Arte em aprovação", producao: "Em produção", pronto: "Pronto para envio", entrega: "Saiu para entrega", entregue: "Entregue" };
+  const fluxo = (cores) => (cores ? ["pago", "arte", "producao", "pronto", "entrega", "entregue"] : ["pago", "producao", "pronto", "entrega", "entregue"]);
+  const AVISOS = {
+    arte: (p) => `Pagamento do pedido ${p.num} confirmado! A arte chega para aprovação ainda hoje.`,
+    producao: (p) => `Pedido ${p.num} em produção. Previsão: ${p.dias} dias úteis.`,
+    pronto: (p) => `Pedido ${p.num} pronto! Sai no próximo roteiro de entrega.`,
+    entrega: (p) => `Pedido ${p.num} saiu para entrega.`,
+    entregue: (p) => `Pedido ${p.num} entregue. Para repor, toque em "Repetir pedido".`,
+  };
+  const ex = (num, data, cliente, canal, itens, etapa, meu = false) => {
+    const cores = itens.reduce((s, i) => Math.max(s, i.cores || 0), 0);
+    const f = fluxo(cores);
+    return { num, data, cliente, canal, itens, cores, fluxo: f, status: Math.max(0, f.indexOf(etapa)), meu, total: itens.reduce((s, i) => s + i.unit * i.qtd + (i.extra || 0), 0), dias: itens.reduce((s, i) => Math.max(s, i.dias || 6), 0) };
+  };
+  const sob = (c, l, a, q, cores, onda = "B") => {
+    const r = precoSob({ c, l, a }, "maleta", onda, q, cores);
+    return { tipo: "maleta", nome: "Caixa maleta", desc: `${c}×${l}×${a} cm · onda ${onda} · ${cores ? cores + (cores > 1 ? " cores" : " cor") : "sem impressão"}`, qtd: q, unit: r.unit, extra: 0, m: [c, l, a], medidas: { c, l, a }, fita: true, cores, dias: r.dias, m2: r.ch.m2 };
+  };
+  const pronta = (id, pacotes) => { const p = CATALOGO.find((x) => x.id === id); return { tipo: "pronta", nome: p.nome, desc: `${p.medida || p.m.join("×") + " cm"} · ${pacotes} pacotes de ${p.pac}`, qtd: pacotes * p.pac, unit: p.un, extra: 0, m: p.m, fita: !p.sem, cores: 0, dias: 1, m2: 0.25 }; };
+  const pedidos = [
+    ex("#4790", "24/10", "Empresa Exemplo Ltda", "site", [sob(30, 20, 15, 1000, 2)], "arte", true),
+    ex("#4712", "12/09", "Empresa Exemplo Ltda", "site", [sob(30, 20, 15, 500, 1), pronta("chapa", 4)], "entregue", true),
+    ex("#4796", "27/10", "Loja virtual de cosméticos (exemplo)", "site", [pronta("ecp", 12)], "pago"),
+    ex("#4795", "27/10", "Distribuidora de alimentos (exemplo)", "vendedor", [sob(40, 30, 25, 2000, 1, "BC")], "producao"),
+    ex("#4793", "26/10", "Fábrica de calçados (exemplo)", "site", [sob(32, 20, 12, 1000, 1)], "arte"),
+    ex("#4791", "25/10", "Escritório de contabilidade (exemplo)", "site", [pronta("arq", 6)], "pronto"),
+    ex("#4788", "23/10", "Indústria de autopeças (exemplo)", "vendedor", [sob(45, 35, 30, 500, 0, "BC")], "entrega"),
+    ex("#4785", "22/10", "Loja de roupas (exemplo)", "site", [pronta("ecm", 8)], "producao"),
+  ];
+  let numSeq = 4797;
+
+  function finalizar() {
+    const itens = carrinho.map((i) => ({ ...i }));
+    const p = ex(`#${numSeq++}`, new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }), ck.empresa.razao, "site", itens, "pago", true);
+    p.total = totalPedido(); p.novo = true; p.pg = ck.pg;
+    pedidos.unshift(p);
+    carrinho = []; ck.etapa = 0; ck.frete = null; ck.freteNome = ""; atualizarContador();
+    location.hash = "pedidos";
+    avisoZap(`Olá, ${esc(ck.empresa.nome.split(" ")[0])}! Recebemos o pagamento do pedido <b>${p.num}</b> (${brl(p.total)}). ${p.cores ? "Nosso designer manda a arte para aprovação ainda hoje." : "Ele já entrou na fila de produção."}`, "Mensagem automática para o cliente");
+    setTimeout(() => toastSimples(`Pedido ${p.num} apareceu no painel da fábrica, na coluna "Novos".`, "#fabrica", "Ver painel"), 900);
+  }
+
+  function trilha(p) {
+    return `<ol class="trilha">${p.fluxo.map((k, i) => `<li class="${i < p.status ? "feito" : i === p.status ? (k === "entregue" ? "feito" : "agora") : ""}">${ETAPAS[k]}</li>`).join("")}</ol>`;
+  }
+  function pillStatus(p) {
+    const k = p.fluxo[p.status];
+    const cls = k === "entregue" ? "ok" : k === "arte" ? "at" : k === "pago" ? "az" : "kr";
+    return `<span class="pill ${cls}">${ETAPAS[k]}</span>`;
+  }
+  function renderPedidos() {
+    const meus = pedidos.filter((p) => p.meu);
+    $("lista-pedidos").innerHTML = meus.map((p) => {
+      const k = p.fluxo[p.status];
+      const i0 = p.itens.find((i) => i.cores) || p.itens[0];
+      const arte = k === "arte" ? `<div class="arte"><div><span class="rotulo">Arte para aprovar</span><div class="faca-wrap" id="arte-${p.num.slice(1)}"></div></div>
+        <div class="acoes" style="display:grid;gap:8px"><p class="dica">O designer posicionou o logo na frente da caixa, em ${i0.cores} ${i0.cores > 1 ? "cores" : "cor"}. Confira as medidas e aprove para começar a produção.</p>
+        <button class="btn btn-kraft" type="button" data-aprovar="${p.num}">Aprovar arte</button><button class="btn btn-linha" type="button" data-ajuste="${p.num}">Pedir ajuste</button></div></div>` : "";
+      return `<article class="pedido">
+        <div class="pedido-topo"><h3>Pedido ${p.num} <span class="dica num">· ${p.data}</span></h3>${pillStatus(p)}</div>
+        ${trilha(p)}
+        <div>${p.itens.map((i) => `<div class="item"><div class="ilus">${isoBox(...i.m, 64, 52, i.fita)}</div><div style="min-width:0"><div class="nome">${esc(i.nome)}</div><div class="sub">${esc(i.desc)}</div></div><div class="val num">${inteiro(i.qtd)} un</div></div>`).join("")}</div>
+        ${arte}
+        <div class="pedido-topo"><span>Total <b class="num">${brl(p.total)}</b></span><div class="hero-acoes"><button class="btn btn-linha btn-peq" type="button" data-nf="${p.num}">Nota fiscal</button><button class="btn btn-kraft btn-peq" type="button" data-repetir="${p.num}">Repetir pedido</button></div></div>
+      </article>`;
+    }).join("");
+    meus.forEach((p) => {
+      if (p.fluxo[p.status] !== "arte") return;
+      const i0 = p.itens.find((i) => i.cores) || p.itens[0];
+      desenharFaca($("arte-" + p.num.slice(1)), i0.medidas || { c: i0.m[0], l: i0.m[1], a: i0.m[2] }, "maleta", i0.logo || "SUA LOGO");
+    });
+  }
+  function avancar(p, origem) {
+    if (p.status >= p.fluxo.length - 1) return;
+    p.status++; p.novo = false;
+    const k = p.fluxo[p.status];
+    if (AVISOS[k]) avisoZap(AVISOS[k](p), origem);
+  }
+  $("lista-pedidos").addEventListener("click", (e) => {
+    const t = e.target.closest("button"); if (!t) return;
+    const p = pedidos.find((x) => x.num === (t.dataset.aprovar || t.dataset.repetir || t.dataset.ajuste || t.dataset.nf));
+    if (!p) return;
+    if (t.dataset.aprovar) { avancar(p, "Mensagem automática para o cliente"); toastSimples(`A fábrica foi avisada: arte do pedido ${p.num} aprovada.`, "#fabrica", "Ver painel"); renderPedidos(); }
+    else if (t.dataset.ajuste) toastSimples("No site real, abre um campo para o cliente descrever o ajuste e anexar outro arquivo. O designer recebe na hora.");
+    else if (t.dataset.nf) toastSimples("No site real, a nota fiscal em PDF fica disponível aqui assim que o pedido sai.");
+    else { p.itens.forEach((i) => adicionar({ ...i, extra: 0 })); toastSimples(`Itens do pedido ${p.num} no carrinho. O clichê não é cobrado de novo.`, "#carrinho", "Ver carrinho"); }
+  });
+
+  // ---------- Painel da fábrica ----------
+  const MESES = [["mai", 18, 92], ["jun", 31, 88], ["jul", 44, 95], ["ago", 58, 90], ["set", 71, 97], ["out", 86, 94]]; // mil R$: site, vendedor (exemplo)
+  function renderGrafico() {
+    const W = 520, H = 230, pl = 40, pb = 26, pt = 10, pr = 8;
+    const max = 200, ch = H - pb - pt, bw = (W - pl - pr) / MESES.length;
+    const y = (v) => pt + ch - (v / max) * ch;
+    let s = "";
+    [0, 50, 100, 150, 200].forEach((v) => { s += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--linha)" stroke-width="1"/><text x="${pl - 6}" y="${y(v) + 4}" font-size="11" fill="var(--tinta-2)" text-anchor="end" font-family="IBM Plex Mono, monospace">${v}</text>`; });
+    MESES.forEach(([m, site, vend], i) => {
+      const x = pl + i * bw + bw * 0.2, w = bw * 0.6;
+      s += `<rect x="${x}" y="${y(vend)}" width="${w}" height="${ch - (y(vend) - pt)}" fill="var(--linha)"/>`;
+      s += `<rect x="${x}" y="${y(vend + site)}" width="${w}" height="${y(vend) - y(vend + site)}" fill="var(--kraft)"/>`;
+      s += `<text x="${x + w / 2}" y="${H - 8}" font-size="12" fill="var(--tinta-2)" text-anchor="middle" font-family="DM Sans, sans-serif">${m}</text>`;
+      if (i === MESES.length - 1) s += `<text x="${x + w / 2}" y="${y(vend + site) - 6}" font-size="12" fill="var(--tinta)" text-anchor="middle" font-family="IBM Plex Mono, monospace">${vend + site} mil</text>`;
+    });
+    $("grafico").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Vendas por mês em mil reais, site e vendedor, maio a outubro (exemplo)">${s}</svg><p class="dica">Em mil R$. Exemplo de como o site soma vendas sem tirar as do vendedor.</p>`;
+  }
+  function renderKpis() {
+    const hoje = pedidos.filter((p) => p.novo).length;
+    const doSite = pedidos.filter((p) => p.canal === "site");
+    const ticket = doSite.reduce((s, p) => s + p.total, 0) / Math.max(1, doSite.length);
+    const arte = pedidos.filter((p) => p.fluxo[p.status] === "arte").length;
+    $("kpis").innerHTML = [
+      [`${86 + Math.round(pedidos.filter((p) => p.novo).reduce((s, p) => s + p.total, 0) / 1000)} mil`, "vendido pelo site em outubro", "+21% sobre setembro"],
+      [`${doSite.length + 41}`, "pedidos pelo site no mês", hoje ? `${hoje} nesta demonstração` : "sem vendedor envolvido"],
+      [brl(ticket).replace(",00", ""), "ticket médio no site", ""],
+      [`${arte}`, "artes esperando o cliente", "aviso automático enviado"],
+    ].map(([v, r, d]) => `<div class="kpi"><strong>${v}</strong><span>${r}</span>${d ? `<em>${d}</em>` : ""}</div>`).join("");
+  }
+  const COLUNAS = [["pago", "Novos"], ["arte", "Arte"], ["producao", "Produção"], ["pronto", "Pronto"], ["entrega", "Em entrega"]];
+  function renderKanban() {
+    $("kanban").innerHTML = COLUNAS.map(([k, nome]) => {
+      const lista = pedidos.filter((p) => p.fluxo[p.status] === k);
+      return `<div class="coluna"><h3>${nome}<span>${lista.length}</span></h3>${lista.map((p) => `
+        <div class="cartao ${p.novo ? "novo" : ""}"><b>${p.num} · ${esc(p.cliente)}</b>
+          <span>${p.itens.map((i) => `${inteiro(i.qtd)} × ${esc(i.nome)}`).join(", ")}</span>
+          <div class="meta"><span>${p.canal === "site" ? "site" : "vendedor"} · ${p.data}</span><span>${brl(p.total).replace(",00", "")}</span></div>
+          ${k === "arte" ? `<span class="dica">esperando o cliente aprovar</span>` : `<button class="btn btn-linha btn-peq" type="button" data-av="${p.num}">Avançar etapa →</button>`}
+        </div>`).join("") || `<span class="dica">Nada aqui.</span>`}</div>`;
+    }).join("");
+  }
+  $("kanban").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-av]"); if (!t) return;
+    const p = pedidos.find((x) => x.num === t.dataset.av);
+    avancar(p, `Mensagem automática para ${p.cliente}`); renderFabrica();
+  });
+  const RECOMPRA = [
+    ["Loja de roupas (exemplo)", "compra a cada ~30 dias · última há 28 dias", "200 × Caixa e-commerce M"],
+    ["Fábrica de calçados (exemplo)", "compra a cada ~45 dias · última há 41 dias", "1.000 × Caixa 32×20×12, 1 cor"],
+    ["Distribuidora de alimentos (exemplo)", "compra a cada ~20 dias · última há 19 dias", "2.000 × Caixa 40×30×25, onda BC"],
+  ];
+  $("recompra").innerHTML = RECOMPRA.map(([c, ciclo, item], i) => `<div class="recompra-linha"><div style="min-width:0"><b>${c}</b><div class="dica">${ciclo}</div><div class="dica num">${item}</div></div><button class="btn btn-linha btn-peq" type="button" data-lembrar="${i}">Lembrar</button></div>`).join("");
+  $("recompra").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-lembrar]"); if (!t) return;
+    const [c, , item] = RECOMPRA[Number(t.dataset.lembrar)];
+    avisoZap(`Olá! Pelo seu histórico, o estoque de caixas deve estar acabando. Quer repetir o último pedido (${item})? É só tocar no link e pagar.`, `Lembrete para ${c}`);
+    t.disabled = true; t.textContent = "Enviado";
+  });
+  function renderFabrica() { renderKpis(); renderKanban(); }
+
+  // ---------- Avisos na tela ----------
+  function toast(html) {
+    const d = document.createElement("div"); d.className = "toast"; d.innerHTML = html;
+    $("toasts").appendChild(d);
+    setTimeout(() => d.remove(), 6500);
+    while ($("toasts").children.length > 3) $("toasts").firstChild.remove();
+  }
+  function avisoZap(texto, rotulo) {
+    toast(`<span class="rotulo">${esc(rotulo)} · WhatsApp</span><div class="zap">${texto}<small>no site real, sai sozinho pelo WhatsApp oficial da fábrica</small></div>`);
+  }
+  function toastSimples(texto, link, rotuloLink) {
+    toast(`<span>${esc(texto)}</span>${link ? `<a class="btn btn-linha btn-peq" href="${link}" style="justify-self:start">${rotuloLink}</a>` : ""}`);
+  }
+
+  // ---------- Atalhos por segmento ----------
+  $("segmentos").addEventListener("click", (e) => {
+    const a = e.target.closest("[data-seg]"); if (!a) return;
+    const [c, l, al, onda] = a.dataset.seg.split(",");
+    $("c").value = c; $("l").value = l; $("a").value = al; $("onda").value = onda;
+    $("m-maleta").checked = true; renderConfig();
+  });
+
+  // ---------- Navegação pela âncora ----------
+  const ROTAS = ["inicio", "catalogo", "monte", "carrinho", "pedidos", "fabrica"];
+  function rota() {
+    const h = location.hash.slice(1);
+    const atual = ROTAS.includes(h) ? h : "inicio";
+    ROTAS.forEach((r) => { $("v-" + r).hidden = r !== atual; });
+    document.querySelectorAll("[data-r]").forEach((a) => { if (a.dataset.r === atual) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    if (atual === "carrinho") renderCarrinho();
+    if (atual === "pedidos") renderPedidos();
+    if (atual === "fabrica") renderFabrica();
+    if (atual === "monte") renderConfig();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", rota);
+
+  renderCatalogo(); renderHero(); renderConfig(); renderGrafico(); atualizarContador(); rota();
+})();
+</script>
