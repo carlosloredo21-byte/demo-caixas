@@ -292,6 +292,28 @@ td.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabula
 .recompra-linha:last-child { border-bottom: 0; }
 
 /* Aviso flutuante (simula a mensagem automática no WhatsApp) */
+/* Calculadora de ganho */
+.calc { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 900px) { .calc { grid-template-columns: minmax(0, 1fr); } }
+.calc-campos h3 { font-size: 17px; }
+.faixas { display: grid; gap: 16px; }
+.faixa { display: grid; gap: 6px; font-size: 14px; color: var(--tinta-2); }
+.faixa span { display: flex; justify-content: space-between; gap: 10px; }
+.faixa b { color: var(--tinta); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.faixa input { accent-color: var(--kraft); width: 100%; }
+.calc-resultado { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); background: var(--kraft-escuro); color: #EAF3EC; border-color: transparent; }
+@media (max-width: 900px) { .calc-resultado { position: static; } }
+.calc-resultado .rotulo { color: #9FE0A6; }
+.calc-resultado .dica { color: rgb(234 243 236 / .75); }
+.calc-total { font: 800 clamp(40px, 6vw, 60px)/1.05 var(--display); letter-spacing: -.02em; color: #fff; font-variant-numeric: tabular-nums; }
+.calc-resultado .det { color: rgb(234 243 236 / .8); }
+.calc-resultado .det dd { color: #fff; }
+.calc-barras { display: grid; gap: 8px; margin: 6px 0; }
+.calc-barra { display: grid; gap: 4px; font-size: 13px; }
+.calc-barra i { display: block; height: 10px; border-radius: 99px; background: #86D98E; min-width: 4px; transition: width .3s ease; }
+.calc-barra i.eco { background: #F3C77A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .calc-resultado { background: #0F2A1B; } }
+:root[data-theme="dark"] .calc-resultado { background: #0F2A1B; }
 .toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; z-index: 20; width: min(360px, calc(100vw - 32px)); }
 .toast { background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 10px 12px; box-shadow: 0 6px 24px rgb(0 0 0 / .18); display: grid; gap: 6px; font-size: 13.5px; animation: chega .3s ease; }
 .toast .rotulo { color: var(--ok); }
@@ -374,6 +396,7 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
       <a href="#monte" data-r="monte">Monte sua caixa</a>
       <a href="#catalogo" data-r="catalogo">Pronta entrega</a>
       <a href="#pedidos" data-r="pedidos">Meus pedidos</a>
+      <a href="#ganho" data-r="ganho">Quanto rende?</a>
       <span class="sep" aria-hidden="true"></span>
       <a href="#fabrica" data-r="fabrica" class="fab">Painel da fábrica</a>
     </nav>
@@ -391,7 +414,7 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
         <p>Escolha o modelo, informe a medida, coloque a sua logo e veja a caixa pronta na tela. O preço aparece na hora e você paga com Pix ou boleto, sem esperar orçamento.</p>
         <div class="hero-acoes">
           <a class="btn btn-kraft" href="#monte">Monte sua caixa</a>
-          <a class="btn btn-vidro" href="#catalogo">Ver pronta entrega</a>
+          <a class="btn btn-vidro" href="#ganho">Calcule o ganho</a>
         </div>
         <div class="numeros" aria-label="Como a loja funciona">
           <div><strong>Na hora</strong><span>preço sem esperar orçamento</span></div>
@@ -468,6 +491,43 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
       </div>
     </div>
   </div>
+  </div>
+</section>
+
+<!-- ============ CALCULADORA DE GANHO ============ -->
+<section class="visao gut" id="v-ganho" hidden>
+  <div class="larg">
+    <div class="cab">
+      <span class="rotulo">Calculadora de ganho</span>
+      <h2>Quanto a loja online pode render para a sua fábrica</h2>
+      <p>Coloque os números de hoje. A conta mostra o faturamento a mais e as horas que a equipe deixa de gastar com orçamento. Os campos vêm com um exemplo.</p>
+    </div>
+    <div class="calc">
+      <form class="caixa-bloco calc-campos" id="f-ganho">
+        <h3>Como é hoje</h3>
+        <div class="form-grade">
+          <label class="campo">Orçamentos por mês<input id="g-orc" type="number" min="0" step="10" value="200"></label>
+          <label class="campo">Fechamento atual (%)<input id="g-fech" type="number" min="0" max="100" step="1" value="20"></label>
+          <label class="campo">Ticket médio (R$)<input id="g-ticket" type="number" min="0" step="100" value="2000"></label>
+          <label class="campo">Minutos da equipe por orçamento<input id="g-min" type="number" min="0" step="5" value="30"></label>
+        </div>
+        <h3>Com a loja e o atendimento automático</h3>
+        <div class="faixas">
+          <label class="faixa"><span>Pedidos novos pela loja por mês <b id="g-novos-v">40</b></span><input id="g-novos" type="range" min="0" max="200" step="5" value="40"></label>
+          <label class="faixa"><span>Pontos a mais de fechamento (resposta na hora) <b id="g-pts-v">5</b></span><input id="g-pts" type="range" min="0" max="20" step="1" value="5"></label>
+          <label class="faixa"><span>Orçamentos que a loja resolve sozinha <b id="g-auto-v">40%</b></span><input id="g-auto" type="range" min="0" max="90" step="5" value="40"></label>
+          <label class="faixa"><span>Custo da hora da equipe <b id="g-hora-v">R$ 40</b></span><input id="g-hora" type="range" min="15" max="150" step="5" value="40"></label>
+        </div>
+      </form>
+      <div class="caixa-bloco calc-resultado" aria-live="polite">
+        <span class="rotulo">Ganho estimado por mês</span>
+        <strong class="calc-total" id="g-total">—</strong>
+        <span class="dica" id="g-ano">—</span>
+        <div class="calc-barras" id="g-barras"></div>
+        <dl class="det" id="g-det"></dl>
+        <p class="dica">Estimativa a partir dos números informados, não é promessa de resultado. Os valores reais saem do diagnóstico com a equipe.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1277,7 +1337,35 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
   });
 
   // ---------- Navegação pela âncora ----------
-  const ROTAS = ["inicio", "catalogo", "monte", "carrinho", "pedidos", "fabrica"];
+  // ---------- Calculadora de ganho ----------
+  function renderGanho() {
+    const n = (id) => Math.max(0, Number($(id).value) || 0);
+    const orc = n("g-orc"), fech = Math.min(100, n("g-fech")) / 100, ticket = n("g-ticket"), min = n("g-min");
+    const novos = n("g-novos"), pts = n("g-pts") / 100, auto = n("g-auto") / 100, hora = n("g-hora");
+    $("g-novos-v").textContent = inteiro(novos); $("g-pts-v").textContent = "+" + n("g-pts");
+    $("g-auto-v").textContent = Math.round(auto * 100) + "%"; $("g-hora-v").textContent = brl(hora).replace(",00", "");
+    const hoje = orc * fech * ticket;
+    const fechNovo = Math.min(1, fech + pts);
+    const pelaLoja = novos * fechNovo * ticket;
+    const pelaResposta = orc * (fechNovo - fech) * ticket;
+    const horas = (orc * auto * min) / 60;
+    const economia = horas * hora;
+    const total = pelaLoja + pelaResposta + economia;
+    $("g-total").textContent = brl(total).replace(/,\d\d$/, "");
+    $("g-ano").textContent = `${brl(total * 12).replace(/,\d\d$/, "")} em 12 meses · faturamento passa de ${brl(hoje).replace(/,\d\d$/, "")} para ${brl(hoje + pelaLoja + pelaResposta).replace(/,\d\d$/, "")} por mês`;
+    const max = Math.max(pelaLoja, pelaResposta, economia, 1);
+    const barra = (rot, v, cls = "") => `<div class="calc-barra"><span>${rot}: <b>${brl(v).replace(/,\d\d$/, "")}</b></span><i class="${cls}" style="width:${(v / max) * 100}%"></i></div>`;
+    $("g-barras").innerHTML = barra("Vendas novas pela loja", pelaLoja) + barra("Mais fechamento com resposta na hora", pelaResposta) + barra("Economia de horas da equipe", economia, "eco");
+    $("g-det").innerHTML = [
+      ["Pedidos novos fechados pela loja", inteiro(Math.round(novos * fechNovo))],
+      ["Fechamento", `${Math.round(fech * 100)}% → ${Math.round(fechNovo * 100)}%`],
+      ["Horas livres da equipe por mês", inteiro(Math.round(horas)) + " h"],
+    ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+  }
+  $("f-ganho").addEventListener("input", renderGanho);
+  $("f-ganho").addEventListener("submit", (e) => e.preventDefault());
+
+  const ROTAS = ["inicio", "catalogo", "monte", "carrinho", "pedidos", "fabrica", "ganho"];
   function rota() {
     const h = location.hash.slice(1);
     const atual = ROTAS.includes(h) ? h : "inicio";
@@ -1291,6 +1379,6 @@ input[type=range] { accent-color: var(--kraft); padding: 0 !important; backgroun
   }
   window.addEventListener("hashchange", rota);
 
-  renderCatalogo(); renderHero(); renderConfig(); renderGrafico(); atualizarContador(); rota();
+  renderCatalogo(); renderHero(); renderConfig(); renderGrafico(); renderGanho(); atualizarContador(); rota();
 })();
 </script>
